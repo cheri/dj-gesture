@@ -1,6 +1,5 @@
 /* 
  * Main function...just calls functions to test for now
- * Path etc. will have to change once we have more files and get this set up properly
  */
 
 #include <vector>
@@ -33,8 +32,7 @@ int main()
     }
     string filepath = cCurrentPath;
 	filepath += "/data/train/";
-	cout << (filepath);
-	
+
     /* Grab XYZ data */
 	data = get_xyz_data(filepath, "circle");
 
