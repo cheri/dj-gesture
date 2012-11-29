@@ -5,6 +5,10 @@
 
 #include <vector>
 #include "get_xyz_data.h"
+
+#include <unistd.h> 
+#define GetCurrentDir getcwd
+
 int main()
 {
 
@@ -21,8 +25,18 @@ int main()
         }
     }
 
+    /* Get current directory path */
+    char cCurrentPath[FILENAME_MAX];
+	if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+    {
+    	return 0;
+    }
+    string filepath = cCurrentPath;
+	filepath += "/data/train/";
+	cout << (filepath);
+	
     /* Grab XYZ data */
-	data = get_xyz_data("/Users/sarahharmon/Desktop/data/train/", "circle");
+	data = get_xyz_data(filepath, "circle");
 
 	/* Print data */
 	for (int e = 0; e < 3; e++)
