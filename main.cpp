@@ -4,6 +4,7 @@
 
 #include <vector>
 #include "get_xyz_data.h"
+#include "get_point_centroids.h"
 
 #include <unistd.h> 
 #define GetCurrentDir getcwd
@@ -58,4 +59,9 @@ int main()
 	        cout << ("\n\n");
 	    }
     }
+
+    /* Call get_point_centroids */
+    // N = # of states
+    int N = 8;
+    get_point_centroids(data,N);
 } 
