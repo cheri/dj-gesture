@@ -5,7 +5,7 @@
 
 #include <vector>
 
-vector<vector<double> > rsum(vector<vector<double> > X, vector<vector<double> > Y)
+vector<vector<double> > rdiv(vector<vector<double> > X, vector<vector<double> > Y)
 {
 	// [N M]=size(X);
  	int N = X[0].size();
