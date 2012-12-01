@@ -2,7 +2,7 @@
  * pr_hmm.h
  */
 
-#include <math.h>
+#include <cmath>
 #include <vector>
 
 /*
