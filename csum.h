@@ -9,7 +9,7 @@
  * @param X: e.g., 8 by 12 matrix
  * @return Z: e.g., 1 by 12 matrix
  */
-vector<double> rsum(vector<vector<double> > X)
+vector<double> csum(vector<vector<double> > X)
 {
  	//N=length(X(:,1));
  	int N = X[0].size();
