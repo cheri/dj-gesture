@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <stdlib.h>
+#include "get_xyz_data.h"
 /*headers eventually...?*/
 
 using namespace std;
@@ -16,11 +18,8 @@ using namespace std;
  * @param filename: the name of the file to read 
  * @return x: the 2D array of size [10][60]
  */
-vector<vector<double> > getData(string filename);
-vector<vector<vector<double> > > get_xyz_data(string path, string name);
-#if 0
-{
 vector<vector<double> > getData(string filename)
+{
     /* Initialize array to return: double x[10][60]; */
     vector<vector<double> > x;
     x.resize(10);
@@ -110,4 +109,3 @@ vector<vector<vector<double> > > get_xyz_data(string path, string name)
 
     return data;
 }
-#endif

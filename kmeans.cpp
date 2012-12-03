@@ -80,16 +80,20 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
 
     fill_rand_matrix(&centroid);
     int i;
+#if 0
     for(i = 0; i < 8; i++) {
         printf("%f %f %f\n",  centroid.at<double>(i,0),  centroid.at<double>(i,1), centroid.at<double>(i,2));
     }
+#endif
     for(i = 0; i < centroid.rows; i++) {
         centroid.row(i) = centroid.row(i).mul(data_diff);
         centroid.row(i) = centroid.row(i) + data_min;
     }
+#if 0
     for(i = 0; i < 8; i++) {
         printf("%f %f %f\n",  centroid.at<double>(i,0),  centroid.at<double>(i,1), centroid.at<double>(i,2));
     }
+#endif
     while(pos_diff > 0.0) {
         int d,c;
         for(d = 0; d < cvdata.rows; d++) {
@@ -117,7 +121,7 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
             centroid.row(idx[d]) += cvdata.row(d);
             pointsInCluster.at<double>(idx[d],1) = pointsInCluster.at<double>(idx[d],1) + 1;
         }
-        for(c = 0; c < 8; c++) {
+        for(c = 0; c < k; c++) {
             if(pointsInCluster.at<double>(c,1) != 0) {
                 centroid.row(c) = centroid.row(c) / pointsInCluster.at<double>(c,1);
             } else {

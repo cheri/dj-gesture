@@ -3,12 +3,15 @@
  */
 
 #include <vector>
+#include <iostream>
+#include "stdlib.h"
 #include "get_xyz_data.h"
 #include "get_point_centroids.h"
 
 #include <unistd.h> 
 #define GetCurrentDir getcwd
 
+using namespace std;
 int main()
 {
 
@@ -38,6 +41,7 @@ int main()
 	data = get_xyz_data(filepath, "circle");
 
 	/* Print data */
+#if 0
 	for (int e = 0; e < 3; e++)
     {
     	// x, y, or z
@@ -59,7 +63,7 @@ int main()
 	        cout << ("\n\n");
 	    }
     }
-
+#endif
     /* Call get_point_centroids */
     // N = # of states
     int N = 8;
