@@ -8,6 +8,7 @@
 #include "get_xyz_data.h"
 #include "get_point_centroids.h"
 #include "get_point_clusters.h"
+#include "prior_transition_matrix.h"
 
 #include <unistd.h> 
 #define GetCurrentDir getcwd
@@ -62,8 +63,12 @@ int main()
     /* Call get_point_centroids */
     // N = # of states
     int N = 8, D = 3;
+    int M = 12, LR = 2;
     double XClustered[10][60];
     double centroids[8][3];
     get_point_centroids(data,N, D, centroids);
     get_point_clusters(data, centroids, D, XClustered);
+    double P[12][12];
+    prior_transition_matrix(M, LR, P);
+    return 0;
 } 

@@ -4,14 +4,13 @@
  */
 
 #include <vector>
- 
+#include "prior_transition_matrix.h" 
  /*
   * @param LR is the allowable number of left-to-right transitions
   * @return P...a diag matrix with 12 columns and 12 rows
   */
 
-void prior_transition_matrix(int K, int LR, double P[12][12]);
-#if 0
+void prior_transition_matrix(int K, int LR, double P[12][12])
 {
 	/* eye(K) returns K*K identity matrix*/
 	//P = ((1/LR))*eye(K);
@@ -41,4 +40,3 @@ void prior_transition_matrix(int K, int LR, double P[12][12]);
 
     //return P;
 }
-#endif
