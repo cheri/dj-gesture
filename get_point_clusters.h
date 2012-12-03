@@ -12,7 +12,9 @@
   *		- this should eventually return XClustered
   */
 
-void get_point_clusters(vector<vector<vector<double> > > data)
+void get_point_clusters(double data[60][10][3], double centroids[8][3], int D, double XClustered[10][60]);
+
+#if 0
 {
 	//XClustered = cell(size(data,2),1);
 	//K = size(centroids,1);
@@ -30,3 +32,4 @@ void get_point_clusters(vector<vector<vector<double> > > data)
         //XClustered{i}(n,1) = I(1);
     }
 }
+#endif

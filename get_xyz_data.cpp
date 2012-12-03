@@ -22,10 +22,10 @@ vector<vector<double> > getData(string filename)
 {
     /* Initialize array to return: double x[10][60]; */
     vector<vector<double> > x;
-    x.resize(10);
-    for (int h = 0; h < 10; h++)
+    x.resize(60);
+    for (int h = 0; h < 60; h++)
     {
-        x[h].resize(60);
+        x[h].resize(10);
     }
 
     /* Init vars to traverse array x */
@@ -42,10 +42,10 @@ vector<vector<double> > getData(string filename)
         while(getline(lineStream,cell,','))
         {
             x[i][j] = atof(cell.c_str());
-            i++;
+            j++;
         }
-        i=0;
-        j++;
+        j=0;
+        i++;
     } 
 
     /* Prints out data from x's csv */
@@ -71,7 +71,7 @@ vector<vector<double> > getData(string filename)
  * @param name: name of csv file
  * @return data: merged XYZ data
  */
-vector<vector<vector<double> > > get_xyz_data(string path, string name)
+void get_xyz_data(string path, string name, double data[60][10][3])
 {
     /* Specify file name & path */
     string x_file = path + "/" + name + "_x.csv";
@@ -83,29 +83,15 @@ vector<vector<vector<double> > > get_xyz_data(string path, string name)
     vector<vector<double> > y = getData(y_file);
     vector<vector<double> > z = getData(z_file);
 
-    /* Initialize XYZ "data" vector*/
-    vector<vector<vector<double> > > data;
     
-    data.resize(10);
-    for (int a = 0; a < 10; a++)
-    {
-        data[a].resize(60);
-        for (int b = 0; b < 60; b++)
-        {
-            data[a][b].resize(3);
-        }
-    }
-
     /* Store XYZ data in "data" vector */
-   for (int c = 0; c < 10; c++)
+    for (int d = 0; d < 60; d++)
     {
-        for (int d = 0; d < 60; d++)
+        for (int c = 0; c < 10; c++)
         {
-            data[c][d][0] = x[c][d];  
-            data[c][d][1] = y[c][d];  
-            data[c][d][2] = z[c][d];  
+            data[d][c][0] = x[c][d];  
+            data[d][c][1] = y[c][d];  
+            data[d][c][2] = z[c][d];  
         }
     }
-
-    return data;
 }

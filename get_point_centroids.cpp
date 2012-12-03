@@ -15,10 +15,9 @@
   *		   easy solution for now is swapped c and d in data[d][c][e] below...				
   * 	- this should return something eventually...need to bridge with Nava's kmeans file
  */
- void get_point_centroids(vector<vector<vector<double> > > data, int K)
+void get_point_centroids(double data[60][10][3], int K, int D, double arr_centroid[8][3])
  {
     int idx[60];
-    double arr_centroid[8][3];
     double pCluster[8][1];
  	/* Initialize mean vector (automatically filled with zeros)*/
  	double mean[60][3];
@@ -30,7 +29,7 @@
         {
         	for (int e = 0; e < 3; e++)
         	{
-        		mean[c][e] = mean[c][e] + data[d][c][e];
+        		mean[c][e] = mean[c][e] + data[c][d][e];
         	}
         }
         for (int f = 0; f < 3; f++)

@@ -7,6 +7,7 @@
 #include "stdlib.h"
 #include "get_xyz_data.h"
 #include "get_point_centroids.h"
+#include "get_point_clusters.h"
 
 #include <unistd.h> 
 #define GetCurrentDir getcwd
@@ -16,18 +17,9 @@ int main()
 {
 
 	/* Initialize XYZ "data" vector*/
-    vector<vector<vector<double> > > data;
+    double data[60][10][3];
     
-    data.resize(10);
-    for (int a = 0; a < 10; a++)
-    {
-        data[a].resize(60);
-        for (int b = 0; b < 60; b++)
-        {
-            data[a][b].resize(3);
-        }
-    }
-
+    
     /* Get current directory path */
     char cCurrentPath[FILENAME_MAX];
 	if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
@@ -35,10 +27,13 @@ int main()
     	return 0;
     }
     string filepath = cCurrentPath;
+    string testpath = cCurrentPath;
 	filepath += "/data/train/";
+	testpath += "/data/test/";
 
     /* Grab XYZ data */
-	data = get_xyz_data(filepath, "circle");
+	get_xyz_data(filepath, "circle", data);
+//	testing = get_xyz_data(filepath, "circle");
 
 	/* Print data */
 #if 0
@@ -66,6 +61,9 @@ int main()
 #endif
     /* Call get_point_centroids */
     // N = # of states
-    int N = 8;
-    get_point_centroids(data,N);
+    int N = 8, D = 3;
+    double XClustered[10][60];
+    double centroids[8][3];
+    get_point_centroids(data,N, D, centroids);
+    get_point_clusters(data, centroids, D, XClustered);
 } 

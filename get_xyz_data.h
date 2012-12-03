@@ -17,7 +17,7 @@ using namespace std;
  * @return x: the 2D array of size [10][60]
  */
 vector<vector<double> > getData(string filename);
-vector<vector<vector<double> > > get_xyz_data(string path, string name);
+void get_xyz_data(string path, string name, double data[60][10][3]);
 #if 0
 {
 vector<vector<double> > getData(string filename)
