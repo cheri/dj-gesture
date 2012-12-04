@@ -468,7 +468,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 		E = cdiv(Gammaksum, Gammasum);
 
 		// transition matrix (orig. sparse)
-		P = rdiv(sxi, rsum(sxi));	//Rightahere!  rsum returns a single vector, but rdiv needs a double vector
+		P = rdiv(sxi, rsum(sxi));	
 
 		//P = P*eye(size(P,1));  // Rightahere!  ...why?  isn't this just P?
 
