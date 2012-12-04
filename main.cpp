@@ -9,6 +9,7 @@
 #include "get_point_centroids.h"
 #include "get_point_clusters.h"
 #include "prior_transition_matrix.h"
+#include "dhmm_numeric.h"
 
 #include <unistd.h> 
 #define GetCurrentDir getcwd
@@ -70,5 +71,30 @@ int main()
     get_point_clusters(data, centroids, D, XClustered);
     double P[12][12];
     prior_transition_matrix(M, LR, P);
+
+    vector<vector<double> > ATrainBinned;
+
+    ATrainBinned.resize(10);
+    for (int i=0; i<10; i++)
+    {
+        ATrainBinned[i].resize(60);
+    }
+
+    vector<vector<double> > pP;
+    pP.resize(12);
+    for (int i=0; i<12; i++)
+    {
+        pP[i].resize(12);
+    }    
+
+    vector<vector<double> > bins;
+    bins.resize(8);
+    for (int i=0; i<8; i++)
+    {
+        bins[i][1] = (double)(i+1);
+    }
+
+    dhmm_numeric(ATrainBinned, pP, bins, M,50,.00001);
+
     return 0;
 } 

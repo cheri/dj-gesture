@@ -18,7 +18,7 @@ vector<vector<double> > rdiv(vector<vector<double> > X, vector<vector<double> > 
  	if(N != K || L != 1)
  	{
  		cout << ("Error in RDIV");
- 		return;
+ 		return (vector<vector<double> >) NULL;
  	}
 
  	// Z=zeros(N,M);
@@ -36,7 +36,7 @@ vector<vector<double> > rdiv(vector<vector<double> > X, vector<vector<double> > 
     		for (int ni = 0; ni < N; ni++)	
     		{
     			//Z(:,m)=X(:,m)./Y;
-    			Z[ni][mi] = X[ni][mi] / Y[ni];
+    			Z[ni][mi] = X[ni][mi] / Y[ni][0];
     		}
     		
     	}
@@ -47,7 +47,7 @@ vector<vector<double> > rdiv(vector<vector<double> > X, vector<vector<double> > 
     	{
     		for (int mi = 0; mi < M; mi++)
     		{
-    			Z[ni][mi] = X[ni][mi] / Y[ni];
+    			Z[ni][mi] = (double) X[ni][mi] / (double) Y[ni][0];
     		}
     	}
     }

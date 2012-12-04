@@ -9,12 +9,13 @@
  * @param X: e.g., 8 by 12 matrix
  * @return Z: e.g., 1 by 12 matrix
  */
-vector<double> csum(vector<vector<double> > X)
+vector<vector<double> > csum(vector<vector<double> > X)
 {
  	//N=length(X(:,1));
  	int N = X[0].size();
- 	vector<double> Z;
- 	Z.resize(N);
+
+ 	vector<vector<double> > Z;
+ 	Z[0].resize(N);
 
 	if (N > 1)
 	{
@@ -25,12 +26,15 @@ vector<double> csum(vector<vector<double> > X)
 			{
 				sum = sum + X[i][j];
 			}
-			Z[i] = sum;
+			Z[0][i] = sum;
 		}
 	}
 	else
 	{
-		Z = X;
+		for(int j=0;j<N; j++)	
+		{
+			Z[0][j] = X[1][j];
+		}
 	}
 
 	return Z;
