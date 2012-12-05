@@ -17,47 +17,47 @@ using namespace std;
 int main()
 {
 
-	/* Initialize XYZ "data" vector*/
+    /* Initialize XYZ "data" vector*/
     double data[60][10][3];
-    
-    
+
+
     /* Get current directory path */
     char cCurrentPath[FILENAME_MAX];
-	if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
+    if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
     {
-    	return 0;
+        return 0;
     }
     string filepath = cCurrentPath;
     string testpath = cCurrentPath;
-	filepath += "/data/train/";
-	testpath += "/data/test/";
+    filepath += "/data/train/";
+    testpath += "/data/test/";
 
     /* Grab XYZ data */
-	get_xyz_data(filepath, "circle", data);
-//	testing = get_xyz_data(filepath, "circle");
+    get_xyz_data(filepath, "circle", data);
+    //	testing = get_xyz_data(filepath, "circle");
 
-	/* Print data */
+    /* Print data */
 #if 0
-	for (int e = 0; e < 3; e++)
+    for (int e = 0; e < 3; e++)
     {
-    	// x, y, or z
-    	cout << ("***Group ");
-    	cout << e;
-    	cout << (":***\n");
+        // x, y, or z
+        cout << ("***Group ");
+        cout << e;
+        cout << (":***\n");
 
-		for (int c = 0; c < 10; c++)
-	    {
-	    	cout << ("Column ");
-	        cout << c;
-	        cout << (":\n");
-	        for (int d = 0; d < 60; d++)
-	        {
-	        	
-	        	cout << data[c][d][e];
-	        	cout << (" ");
-	        }
-	        cout << ("\n\n");
-	    }
+        for (int c = 0; c < 10; c++)
+        {
+            cout << ("Column ");
+            cout << c;
+            cout << (":\n");
+            for (int d = 0; d < 60; d++)
+            {
+
+                cout << data[c][d][e];
+                cout << (" ");
+            }
+            cout << ("\n\n");
+        }
     }
 #endif
     /* Call get_point_centroids */
@@ -70,5 +70,36 @@ int main()
     get_point_clusters(data, centroids, D, XClustered);
     double P[12][12];
     prior_transition_matrix(M, LR, P);
+#if 0
+
+    double sumLik = 0;
+    double minLik = 1000000;
+    for j=1:length(ATrainBinned)
+        lik = pr_hmm(ATrainBinned{j},P,E',Pi);
+    if (lik < minLik)
+        minLik = lik;
+    end
+        sumLik = sumLik + lik;
+    end
+        gestureRecThreshold = 2.0*sumLik/length(ATrainBinned);
+
+    fprintf('\n\n********************************************************************\n');
+    fprintf('Testing %i sequences for a log likelihood greater than %f\n',length(ATestBinned),gestureRecThreshold);
+    fprintf('********************************************************************\n\n');
+
+    recs = 0;
+    tLL = zeros(length(ATestBinned),1);
+    for j=1:length(ATestBinned)
+        tLL(j,1) = pr_hmm(ATestBinned{j},P,E',Pi);
+    if (tLL(j,1) > gestureRecThreshold)
+        recs = recs + 1;
+    fprintf('Log likelihood: %f > %f (threshold) -- FOUND %s GESTURE!\n',tLL(j,1),gestureRecThreshold,test_gesture);
+    else
+        fprintf('Log likelihood: %f < %f (threshold) -- NO %s GESTURE.\n',tLL(j,1),gestureRecThreshold,test_gesture);
+    end
+        end
+        fprintf('Recognition success rate: %f percent\n',100*recs/length(ATestBinned));
+
+#endif
     return 0;
 } 
