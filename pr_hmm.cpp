@@ -12,8 +12,7 @@
  * @param pi: initial probability matrix
  * @return P: probability of given sequence in the given model
  */
-double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double> > b, vector<double> pi);
-#if 0
+double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double> > b, vector<double> pi)
 {
 	n = a[1].size();
 	T=o[0].size();
@@ -76,4 +75,3 @@ Copyright (c) 2009, kannu mehta
 % ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
 % POSSIBILITY OF SUCH DAMAGE.
 */
-#endif

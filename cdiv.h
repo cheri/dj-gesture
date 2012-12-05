@@ -10,7 +10,7 @@ vector<vector<double> > cdiv(vector<vector<double> > X, vector<vector<double> > 
 	if (X[1].size() != Y[1].size() || Y[1].size() != 1)
 	{
 		cout << ("Error in CDIV");
-		return;
+		return (vector<vector<double> >) NULL;
 	}
 
 	/* Initialize Z */
@@ -26,7 +26,7 @@ vector<vector<double> > cdiv(vector<vector<double> > X, vector<vector<double> > 
     {
     	for(int j=0; j < X[1].size(); j++)
     	{
-    		Z[i][j] = X[i][j] / Y[i];	
+    		Z[i][j] = (double) X[i][j] / (double) Y[i][j];	
     	}
     }
 
