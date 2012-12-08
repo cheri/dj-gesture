@@ -4,6 +4,8 @@
 
 #include <cmath>
 #include <vector>
+#include "pr_hmm.h"
+using namespace std;
 
 /*
  * @param o: Given observation sequence labeled in numerics (e.g., 1 column with 60 rows)
@@ -14,17 +16,16 @@
  */
 double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double> > b, vector<double> pi)
 {
-	n = a[1].size();
-	T=o[0].size();
+	// TODO: fix o, pi
+	int n = a[1].size();
+	int T=o.size();
 
-	//m is not defined in the original code.
-	//Thus, this code has the right to be off 
-	//by a factor of six billion and four.
-	//Approximately.
+	double m[60][12];
 
 	for (int i=0; i<n; i++)
 	{
-		m[0][i] = b[i][o[1]]*pi(i);
+		double j = o[0];
+		m[0][i] = b[i][j]*pi[i];
 	}
 
 	for (int ti=0;ti<T-1; ti++)
@@ -36,7 +37,7 @@ double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double>
 			{
 				z = z + a[k][j]*m[ti][k];
 			}
-			m[ti+1][j] = z*b[j][o[t+1]];
+			m[ti+1][j] = z*b[j][o[ti+1]];
 		}	
 	}
 

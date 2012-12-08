@@ -10,6 +10,7 @@
 #include "get_point_clusters.h"
 #include "prior_transition_matrix.h"
 #include "dhmm_numeric.h"
+#include "pr_hmm.h"
 #include <unistd.h> 
 #define GetCurrentDir getcwd
 
@@ -84,7 +85,26 @@ int main()
     double sumLik = 0, minLik = 1000000, lik=0;
     for (int j=0; j < ATrainBinned[0].size(); j++)
     {
-        //lik = pr_hmm(ATrainBinned{j},P,E',Pi);
+        /* Find E Transpose (E = 8x12)*/
+        vector<vector<double> > ET;
+        ET.resize(12);
+
+        for (int go=0; go<12; go++)
+        {
+            ET[go].resize(8);
+        }
+
+        // put back in when dhmm_numeric returns E
+        /*for (int nava=0; nava<8; nava++)
+        {
+            for (int sar=0; sar<12; sar++)
+            {
+                ET[sar][nava] = E[nava][sar];
+            }
+        }*/
+        
+        //lik = pr_hmm(ATrainBinned[j][:],P,ET/*,Pi*/);
+
         if (lik < minLik)
         {
             minLik = lik;
@@ -99,6 +119,8 @@ int main()
 
     for (int j=0; j<10; j++)
     {
+        // Rightahere!
+        // for some reason, ATestBinned{j} is 1 column with 71 rows instead of 60??
         //tLL[j][0] = pr_hmm(ATestBinned{j},P,E',Pi);
         if (tLL[j][0] > gestureRecThreshold)
         {
