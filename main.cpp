@@ -93,27 +93,27 @@ int main()
     }
     gestureRecThreshold = 2.0*sumLik/ATrainBinned[0].size();
 
+    cout << ("Testing!\n");
     int recs=0;
-    double tLL[10][1];
+    double tLL[10][1]; 
 
-#if 0
-    fprintf('\n\n********************************************************************\n');
-    fprintf('Testing %i sequences for a log likelihood greater than %f\n',length(ATestBinned),gestureRecThreshold);
-    fprintf('********************************************************************\n\n');
+    for (int j=0; j<10; j++)
+    {
+        //tLL[j][0] = pr_hmm(ATestBinned{j},P,E',Pi);
+        if (tLL[j][0] > gestureRecThreshold)
+        {
+            recs = recs+1;
+            cout << ("Found gesture!\n");
+        }
+        else
+        {
+            cout << ("No gesture (╯°□°）╯︵ ┻━┻ \n");   
+        }
+    }
 
-    recs = 0;
-    tLL = zeros(length(ATestBinned),1);
-    for j=1:length(ATestBinned)
-        tLL(j,1) = pr_hmm(ATestBinned{j},P,E',Pi);
-    if (tLL(j,1) > gestureRecThreshold)
-        recs = recs + 1;
-    fprintf('Log likelihood: %f > %f (threshold) -- FOUND %s GESTURE!\n',tLL(j,1),gestureRecThreshold,test_gesture);
-    else
-        fprintf('Log likelihood: %f < %f (threshold) -- NO %s GESTURE.\n',tLL(j,1),gestureRecThreshold,test_gesture);
-    end
-        end
-        fprintf('Recognition success rate: %f percent\n',100*recs/length(ATestBinned));
+    cout << ("Recognition success rate: ");
+    cout << (100*recs/10);
+    cout << ("\n");
 
-#endif
     return 0;
 } 
