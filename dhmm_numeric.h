@@ -41,6 +41,20 @@ bool IsFiniteNumber(double x)
     return (x <= DBL_MAX && x >= -DBL_MAX); 
 }  
 
+
+void mult(vector<vector<double> > mat1, vector<vector<double> > mat2, vector<vector<double> > mat3) {
+    int m, c, n;
+    int i, j, k;
+
+    for(i=0; i<m; i++)
+        for(j=0; j<n; j++) {
+            mat3[i][j] = 0;
+            for(k=0; k<c; k++)
+                mat3[i][j] += mat1[i][k] * mat2[k][j];
+        }
+}
+
+
 /* 
  * Returns an m-by-n matrix of random entries. 
  * @param m, n
@@ -91,6 +105,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     for (int j=0; j<N; j++)
     {
     	//Rightahere!
+        //looks fine too me...
     	// T(n)=size(X{n},1);...but I think this should equal 60 every time the way we set it up
 		T[j] = 60;
     }
@@ -208,17 +223,15 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 				 * m = findstr(alphabet, Xcurrent(i));
 				 */
 
-				double m[8]; // = {0, 0, 0, 0, 0, 0, 0, 0};
 				int mIndex = 0;
 				bool nuthin = true;
 				for (int ra=0; ra<bins[0].size(); ra++)
 				{
-					if (bins[ra][0] == Xcurrent[g])
-					{
-						m[mIndex] = (double) bins[ra][0];	
-						mIndex++;
-						nuthin=false;
-					}
+					if (bins[ra][0] == Xcurrent[g]) {
+                        mIndex = ra;
+                        nuthin = false;
+                        break;
+                    }
 				}
 
 				/* 
@@ -236,7 +249,8 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 				{
 					//Rightahere!
 					// m is an array...quickfix for now
-					B[g][e]	= E[m[mIndex-1]][e];
+                    //made some changes here
+					B[g][e]	= E[mIndex][e];
 				}
 			}
 
@@ -381,7 +395,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 			 	 {
 			 	 	//Rightahere!
 			 	 	//m is an array again...quickfix for now...
-			 	 	gammaksum[m[mIndex2-1]][gk] = gammaksum[m[mIndex2-1]][gk] + gamma[egral][gk];
+			 	 	gammaksum[mIndex2][gk] = gammaksum[mIndex2][gk] + gamma[egral][gk];
 			 	 }
 		    }
 
