@@ -63,33 +63,40 @@ int main()
     for (int i=0; i<12; i++)
     {
         pP[i].resize(12);
-    }    
+    }
 
     vector<vector<double> > bins;
     bins.resize(8);
     for (int i=0; i<8; i++)
     {
-        bins[i][1] = (double)(i+1);
+        bins[i].resize(1);
     }
-
+    for (double i=0; i<8; i++)
+    {
+        bins[i][0] = (i+1.0);
+    }
+    
     // Train the model:
     int cyc = 50;
-    dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001);
+    // dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
 
     /****TESTING****/    
-#if 0
-
-    double sumLik = 0;
-    double minLik = 1000000;
-    for j=1:length(ATrainBinned)
-        lik = pr_hmm(ATrainBinned{j},P,E',Pi);
-    if (lik < minLik)
-        minLik = lik;
-    end
+    double sumLik = 0, minLik = 1000000, lik=0;
+    for (int j=0; j < ATrainBinned[0].size(); j++)
+    {
+        //lik = pr_hmm(ATrainBinned{j},P,E',Pi);
+        if (lik < minLik)
+        {
+            minLik = lik;
+        }
         sumLik = sumLik + lik;
-    end
-        gestureRecThreshold = 2.0*sumLik/length(ATrainBinned);
+    }
+    gestureRecThreshold = 2.0*sumLik/ATrainBinned[0].size();
 
+    int recs=0;
+    double tLL[10][1];
+
+#if 0
     fprintf('\n\n********************************************************************\n');
     fprintf('Testing %i sequences for a log likelihood greater than %f\n',length(ATestBinned),gestureRecThreshold);
     fprintf('********************************************************************\n\n');
