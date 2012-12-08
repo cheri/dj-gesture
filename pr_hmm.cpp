@@ -5,27 +5,28 @@
 #include <cmath>
 #include <vector>
 #include "pr_hmm.h"
+#include <iostream>
 using namespace std;
 
 /*
+ * @param cur: the current column index for o
  * @param o: Given observation sequence labeled in numerics (e.g., 1 column with 60 rows)
  * @param a: A(N,N)=transition probability matrix
  * @param b: B(N,M)=Emission matrix
- * @param pi: initial probability matrix
+ * @param pi: initial probability matrix (1xK, K=12?)
  * @return P: probability of given sequence in the given model
  */
-double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double> > b, vector<double> pi)
+double pr_hmm(int cur, vector<vector<double> > o, double a[12][12], vector<vector<double> > b, vector<vector<double> > pi)
 {
-	// TODO: fix o, pi
-	int n = a[1].size();
-	int T=o.size();
-
+	int n = 12;
+	int T = 60;
+	
 	double m[60][12];
 
 	for (int i=0; i<n; i++)
 	{
-		double j = o[0];
-		m[0][i] = b[i][j]*pi[i];
+		double j = o[cur][0];
+		m[0][i] = b[i][j]*pi[0][i];
 	}
 
 	for (int ti=0;ti<T-1; ti++)
@@ -37,7 +38,7 @@ double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double>
 			{
 				z = z + a[k][j]*m[ti][k];
 			}
-			m[ti+1][j] = z*b[j][o[ti+1]];
+			m[ti+1][j] = z*b[j][o[cur][ti+1]];
 		}	
 	}
 

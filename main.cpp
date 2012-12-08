@@ -36,8 +36,8 @@ int main()
     string test_gesture = "circle";
 
     /* Grab XYZ data */
-    get_xyz_data(filepath, train_gesture, training);    // train
-    get_xyz_data(testpath, test_gesture, testing);      // test
+    get_xyz_data(filepath, train_gesture, training);
+    get_xyz_data(testpath, test_gesture, testing);
 
     /****INITIALIZE****/
     double gestureRecThreshold = 0; // set below
@@ -94,16 +94,18 @@ int main()
             ET[go].resize(8);
         }
 
-        // put back in when dhmm_numeric returns E
-        /*for (int nava=0; nava<8; nava++)
+        // put comment back in when dhmm_numeric returns E
+        for (int nava=0; nava<8; nava++)
         {
             for (int sar=0; sar<12; sar++)
             {
-                ET[sar][nava] = E[nava][sar];
+                ET[sar][nava] = 0;//E[nava][sar];
             }
-        }*/
+        }
         
-        //lik = pr_hmm(ATrainBinned[j][:],P,ET/*,Pi*/);
+        // we pass ATrainBinned[j][:] here...
+        // Pi is from dhmm_numeric
+        lik = pr_hmm(j, ATrainBinned, P, ET, Pi);
 
         if (lik < minLik)
         {
