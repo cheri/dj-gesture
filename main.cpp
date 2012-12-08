@@ -123,7 +123,7 @@ int main()
     {
         // Rightahere!
         // for some reason, ATestBinned{j} is 1 column with 71 rows instead of 60??
-        //tLL[j][0] = pr_hmm(ATestBinned{j},P,E',Pi);
+        tLL[j][0] = pr_hmm(j, ATestBinned, P, ET, Pi);
         if (tLL[j][0] > gestureRecThreshold)
         {
             recs = recs+1;
