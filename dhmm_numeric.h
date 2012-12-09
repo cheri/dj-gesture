@@ -41,17 +41,56 @@ bool IsFiniteNumber(double x)
     return (x <= DBL_MAX && x >= -DBL_MAX); 
 }  
 
-
-void mult(vector<vector<double> > mat1, vector<vector<double> > mat2, vector<vector<double> > mat3) {
+vector<vector<double> > mult_2_2(vector<vector<double> > mat1, vector<vector<double> > mat2) {
     int m, c, n;
     int i, j, k;
 
-    for(i=0; i<m; i++)
+    m = mat1.size();
+    c = mat1[0].size();
+    n = mat2[0].size();
+    vector<vector<double> > mat3;
+    mat3.resize(m);
+    for(i=0; i < m; i++) {
+        mat3[i].resize(n);
+    }
+    for(i=0; i<m; i++) {
         for(j=0; j<n; j++) {
             mat3[i][j] = 0;
             for(k=0; k<c; k++)
                 mat3[i][j] += mat1[i][k] * mat2[k][j];
         }
+    }
+    return mat3;
+}
+
+vector<double> mult_1_2(vector<double> mat1, vector<vector<double> >mat2) {
+    int c, n;
+    int i, j, k;
+    c = mat1.size();
+    n = mat2[0].size();
+    vector<double> mat3;
+    mat3.resize(c);
+    for(j=0; j<n; j++) {
+        mat3[j] = 0;
+        for(k=0; k<c; k++)
+            mat3[j] += mat1[k] * mat2[k][j];
+    }
+    return mat3;
+}
+
+vector<double> mult_2_1(vector<vector<double> >mat1, vector<double> mat2) {
+    int m, c, n;
+    int i, j, k;
+    m = mat1.size();
+    c = mat1[0].size();
+    vector<double> mat3;
+    mat3.resize(c);
+    for(i=0; i<m; i++) {
+            mat3[i] = 0;
+            for(k=0; k<c; k++)
+                mat3[i] += mat1[i][k] * mat2[k];
+    }
+    return mat3;
 }
 
 
