@@ -94,12 +94,12 @@ int main()
             ET[go].resize(8);
         }
 
-        // put comment back in when dhmm_numeric returns E
+        // dhmm_numeric returns E
         for (int nava=0; nava<8; nava++)
         {
             for (int sar=0; sar<12; sar++)
             {
-                ET[sar][nava] = 0;//E[nava][sar];
+                ET[sar][nava] = E[nava][sar];
             }
         }
         
@@ -121,8 +121,6 @@ int main()
 
     for (int j=0; j<10; j++)
     {
-        // Rightahere!
-        // for some reason, ATestBinned{j} is 1 column with 71 rows instead of 60??
         tLL[j][0] = pr_hmm(j, ATestBinned, P, ET, Pi);
         if (tLL[j][0] > gestureRecThreshold)
         {
