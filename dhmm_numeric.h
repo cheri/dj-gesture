@@ -163,12 +163,12 @@ vector<vector<double> > randomMatrix(int m, int n)
 void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<vector<double> > bins, int K, int cyc, double tol)
 {
 	int D = X[1].size();
-	int num_bins = bins[0].size();
+	int num_bins = bins.size();
 
 	float epsi = pow(1.0,-10);
 
 	// number of sequences (e.g., 10)
-	int N = X[0].size();
+	int N = X.size();
 
 	// length of each sequence
 	vector<double> T;
@@ -263,6 +263,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
 		//1xK vectors
 		vector<vector<double> > Gammainit, Gammasum;
+		Gammainit.resize(1);
 		Gammainit[0].resize(K);
 		Gammasum.resize(1);
 		Gammasum[0].resize(K);
@@ -285,12 +286,13 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 			gamma.resize(T[n]);
 			gammaksum.resize(num_bins);
 
+            for (int eger1 = 0; eger1 < num_bins; eger1++)
+                gammaksum[eger1].resize(K);
 			for (int eger=0; eger<T[n]; eger++)
 			{
 				alpha[eger].resize(K);
 				beta[eger].resize(K);
 				gamma[eger].resize(K);
-				gammaksum[eger].resize(K);				
 			}
   			
   			/* Inital values of B = Prob(output|s_i), given data X*/
@@ -306,7 +308,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
 				int mIndex = 0;
 				bool nuthin = true;
-				for (int ra=0; ra<bins[0].size(); ra++)
+				for (int ra=0; ra<bins.size(); ra++)
 				{
 					if (bins[ra][0] == Xcurrent[g]) {
                         mIndex = ra;
@@ -368,34 +370,26 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 			/*alpha(ellect,:)=(alpha(ellect-1,:)*P).*B(ellect,:);*/
 			int asum=0;	
 			for (int ellect=1; ellect<T[n]; ellect++)
-			{
+            {
                 alpha[ellect] = mult_1_2(alpha[ellect], P);
-				for (int egrate=0; egrate<K; egrate++)
-				{
-					//Rightahere!
-					// P is 12x12 (sparse) - two for loops (below) to account for this...
-					// alpha is T(n) by K
-					// B is 1 x K
-					// ...perhaps they mean B[0][egrate] instead of B[ellect][egrate]?
-					for (int ready; ready <P[0].size(); ready++)
-					{
-						for (int set; set<P[1].size(); set++)
-						{
-							alpha[ellect][egrate]=alpha[ellect-1][egrate]*B[ellect][egrate];
-						}
-					}
-					asum = asum+alpha[ellect][egrate];
-				}
-				//scale(i)=sum(alpha(i,:));
-				scale[ellect] = asum;
+                //Rightahere!
+                // P is 12x12 (sparse) - two for loops (below) to account for this...
+                // alpha is T(n) by K
+                // B is 1 x K
+                for (int set; set < alpha[0].size(); set++) {
+                    alpha[ellect][set]=alpha[ellect-1][set]*B[ellect][set];
+                    asum += alpha[ellect][set];
+                }
+                //scale(i)=sum(alpha(i,:));
+                scale[ellect] = asum;
 
-				//alpha(i,:)=alpha(i,:)/scale(i);
-				for (int an=0; an<K; an++)
-				{
-					alpha[ellect][an] = alpha[ellect][an] / scale[ellect];		
-				}
-				
-			}
+                //alpha(i,:)=alpha(i,:)/scale(i);
+                for (int an=0; an<K; an++)
+                {
+                    alpha[ellect][an] = alpha[ellect][an] / scale[ellect];		
+                }
+
+            }
 
 			for (int s=0;s<K; s++)	
 			{

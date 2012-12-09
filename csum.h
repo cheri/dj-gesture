@@ -11,20 +11,20 @@
  */
 vector<double> csum(vector<vector<double> > X)
 {
-    //N=length(X(:,1));
     int N = X.size();
+    int M = X[0].size();
 
     vector<double> Z;
-    Z.resize(N);
+    Z.resize(M);
 
-    for (int i = 0; i < N; i++)
+    for (int j = 0; j < M; j++)
     {
         double sum = 0;
-        for (int j = 0; j < X[0].size(); j++)
+        for (int i = 0; i < N; i++)
         {
             sum = sum + X[i][j];
         }
-        Z[i] = sum;
+        Z[j] = sum;
     }
 
     return Z;

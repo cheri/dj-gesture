@@ -16,11 +16,11 @@ vector<vector<double> > cdiv(vector<vector<double> > X, vector<double> Y)
     }
 
     /* Find Z */
-    for(int i=0; i < X.size(); i++)
+    for(int j=0; j < X[0].size(); j++)
     {
-    	for(int j=0; j < X[0].size(); j++)
+    	for(int i=0; i < X.size(); i++)
     	{
-    		Z[i][j] = (double) X[i][j] / (double) Y[j];	
+    		Z[i][j] = (double) X[i][j] / (double) Y[i];	
     	}
     }
 
