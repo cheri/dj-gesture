@@ -45,8 +45,7 @@ vector<double> dot_mult_1_1(vector<double> mat1, vector<double> mat2) {
     vector<double> prod;
 
     for(int i=0; i < mat1.size(); i++) {
-            prod[i] = mat1[i] * mat2[i];        
-        }
+        prod[i] = mat1[i] * mat2[i];        
     }
 
     return prod;
@@ -61,6 +60,25 @@ vector<vector<double> > dot_mult_2_2(vector<vector<double> > mat1, vector<vector
     }
     return prod;
 }
+
+vector<vector<double> > mult_1_1_2(vector<double> mat1, vector<double> mat2) {
+    int m, c, n;
+    int i, j, k;
+
+    m = mat1.size();
+    c = mat2.size();
+    vector<vector<double> > mat3;
+    mat3.resize(m);
+    for(i=0; i < m; i++) {
+        mat3[i].resize(c);
+    }
+    for(i=0; i<m; i++) {
+        for(j=0; j<c; j++)
+            mat3[i][j] = mat1[i] * mat2[j];
+    }
+    return mat3;
+}
+
 
 vector<vector<double> > mult_2_2(vector<vector<double> > mat1, vector<vector<double> > mat2) {
     int m, c, n;
@@ -170,7 +188,8 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 		T[j] = 60;
     }
 
-    double TMAX = *max_element(T.begin(), T.end());
+    //double TMAX = *max_element(T.begin(), T.end());
+    double TMAX = 60;
 
 	cout << ("\n********************************************************************\n");
 	cout << ("Training!");
@@ -487,7 +506,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 for (int go=0; go<K; go++)
                     t[go].resize(K);
                 
-                t = dot_mult_2_2(P, (mult_1_2(alphaT[el], (dot_mult_1_1(beta[el+1], B[el+1])))));
+                t = dot_mult_2_2(P, (mult_1_1_2(alphaT[el], (dot_mult_1_1(beta[el+1], B[el+1])))));
                 
                 // find sum of t <--can sum all values; only diag. will matter
                 int tsum=0;
