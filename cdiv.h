@@ -5,28 +5,22 @@
 
 #include <vector>
 
-vector<vector<double> > cdiv(vector<vector<double> > X, vector<vector<double> > Y) 
+vector<vector<double> > cdiv(vector<vector<double> > X, vector<double> Y) 
 {
-	if (X[1].size() != Y[1].size() || Y[1].size() != 1)
-	{
-		cout << ("Error in CDIV");
-		return (vector<vector<double> >) NULL;
-	}
-
 	/* Initialize Z */
     vector<vector<double> > Z;
-    Z.resize(X[0].size());
-    for (int h = 0; h < X[0].size(); h++)
+    Z.resize(X.size());
+    for (int h = 0; h < X.size(); h++)
     {
-        Z[h].resize(X[1].size());
+        Z[h].resize(X[0].size());
     }
 
     /* Find Z */
-    for(int i=0; i < X[0].size(); i++)
+    for(int i=0; i < X.size(); i++)
     {
-    	for(int j=0; j < X[1].size(); j++)
+    	for(int j=0; j < X[0].size(); j++)
     	{
-    		Z[i][j] = (double) X[i][j] / (double) Y[i][j];	
+    		Z[i][j] = (double) X[i][j] / (double) Y[j];	
     	}
     }
 

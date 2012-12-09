@@ -79,19 +79,25 @@ int main()
     
     // Train the model:
     int cyc = 50;
-    // dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
-
+     dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
+#if 0
     /****TESTING****/    
     double sumLik = 0, minLik = 1000000, lik=0;
     for (int j=0; j < ATrainBinned[0].size(); j++)
     {
         /* Find E Transpose (E = 8x12)*/
         vector<vector<double> > ET;
+        vector<vector<double> > E;
         ET.resize(12);
 
         for (int go=0; go<12; go++)
         {
             ET[go].resize(8);
+        }
+        E.resize(8);
+        for (int go=0; go < 8; go++)
+        {
+            E[go].resize(12);
         }
 
         // dhmm_numeric returns E
@@ -136,6 +142,6 @@ int main()
     cout << ("Recognition success rate: ");
     cout << (100*recs/10);
     cout << ("\n");
-
+#endif
     return 0;
 } 

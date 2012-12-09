@@ -14,14 +14,16 @@ vector<vector<double> > rsum(vector<vector<double> > X)
  	// Z=zeros(N,1);
  	vector<vector<double> > Z;
  	Z.resize(N);
+    for(int i=0; i < N, i++)
+        Z[i].resize(1);
 
  	if (M==1)
- 	{
-    for(int i=0;i<N; i++)
- 		{
-      Z[i][0] = X[i][1];
+    {
+        for(int i=0;i<N; i++)
+        {
+            Z[i][0] = X[i][1];
+        }
     }
- 	}
  	else if (M<2*N)
  	{
   		for (int mi=0; mi<M; mi++)

@@ -9,6 +9,7 @@
 #include <vector>
 #include "csum.h"
 #include "cdiv.h"
+#include "cdiv_2.h"
 #include "rdiv.h"
 #include "rsum.h"
 
@@ -221,13 +222,13 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 	int sumPi = 0;
 	for (int pii=0; pii<K; pii++)
 	{
-		sumPi = sumPi + Pi[1][pii];
+		sumPi = sumPi + Pi[0][pii];
 	}	
 
 	// normalize Pi
 	for (int pip=0; pip<K; pip++)
 	{
-		Pi[1][pip] = Pi[1][pip] / sumPi;
+		Pi[0][pip] = Pi[0][pip] / sumPi;
 	}
 
 	// transition matrix
@@ -263,6 +264,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 		//1xK vectors
 		vector<vector<double> > Gammainit, Gammasum;
 		Gammainit[0].resize(K);
+		Gammasum.resize(1);
 		Gammasum[0].resize(K);
 
 		//originally a sparse, but we don't need no stinkin' optimization
@@ -558,7 +560,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
 		/* M STEP */
 		// outputs
-		E = cdiv(Gammaksum, Gammasum);
+		E = cdiv_2(Gammaksum, Gammasum);
 
 		// transition matrix (orig. sparse)
 		P = rdiv(sxi, rsum(sxi));	
