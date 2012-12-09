@@ -41,6 +41,27 @@ bool IsFiniteNumber(double x)
     return (x <= DBL_MAX && x >= -DBL_MAX); 
 }  
 
+vector<double> dot_mult_1_1(vector<double> mat1, vector<double> mat2) {
+    vector<double> prod;
+
+    for(int i=0; i < mat1.size(); i++) {
+            prod[i] = mat1[i] * mat2[i];        
+        }
+    }
+
+    return prod;
+}
+
+vector<vector<double> > dot_mult_2_2(vector<vector<double> > mat1, vector<vector<double> > mat2) {
+    vector<vector<double> > prod;
+    for(int i=0; i < mat1.size(); i++) {
+        for(int j=0; j < mat1[0].size(); j++) {
+            prod[i][j] = mat1[i][j] * mat2[i][j];
+        }
+    }
+    return prod;
+}
+
 vector<vector<double> > mult_2_2(vector<vector<double> > mat1, vector<vector<double> > mat2) {
     int m, c, n;
     int i, j, k;
@@ -327,6 +348,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 			int asum=0;	
 			for (int ellect=1; ellect<T[n]; ellect++)
 			{
+                alpha[ellect] = mult_1_2(alpha[ellect], P);
 				for (int egrate=0; egrate<K; egrate++)
 				{
 					//Rightahere!
@@ -338,7 +360,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 					{
 						for (int set; set<P[1].size(); set++)
 						{
-							alpha[ellect][egrate]=(alpha[ellect-1][egrate]*P[ready][set])*B[ellect][egrate];
+							alpha[ellect][egrate]=alpha[ellect-1][egrate]*B[ellect][egrate];
 						}
 					}
 					asum = asum+alpha[ellect][egrate];
@@ -385,6 +407,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 					// again, PT is technically 12x12...potential issues here
 					beta[v][w]=beta[v+1][w]*B[v+1][w]/scale[w]; //*(P')
 				}	
+                beta[v] = mult_1_2(beta[v], PT);
 			}
 
 		   	for (int seg=0; seg<T[n]; seg++)
@@ -417,15 +440,14 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 			 	 * m = findstr(alphabet, Xcurrent(i));
 			 	 */
 			 	 
-			 	double m[8]; //m = {0, 0, 0, 0, 0, 0, 0, 0};
 				int mIndex2 = 0;
 			
 				for (int ra=0; ra<bins[0].size(); ra++)
 				{
 					if (bins[ra][0] == Xcurrent[egral])
 					{
-						m[mIndex2] = bins[ra][0];	
 						mIndex2++;
+                        break;
 					}
 				}
 
@@ -445,7 +467,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
 			for (int go=0; go<K; go++)
 			{
-				alpha[go].resize(T[n]);
+				alphaT[go].resize(T[n]);
 			}
 
 			for (int nava=0; nava<T[n]; nava++)
@@ -458,37 +480,36 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
 			//Rightahere!
 		    for (int el=0; el<T[n]-1; el++)	//but this can't be the first var considering the matrix dims...
-		    {
-		    	vector<vector<double> > t;
-				
-				for (int ku=0; ku<K; ku++)
-				{
-					//t is a diagonal 12x12 matrix...
-					//t and P might be wrong here...
-					t[el][ku] = (P[el][ku] * alphaT[el][ku]) * (beta[el][ku] * B[el][ku]);
-				}
+            {
+                vector<vector<double> > t;
+                t.resize(K);
 
-				// find sum of t <--can sum all values; only diag. will matter
-				int tsum=0;
-				for (int le=0; le<t[0].size(); le++)	
-				{
-					for (int uk=0; uk<t[1].size(); uk++)
-					{
-						tsum = tsum + t[le][uk];
-					}
-				}
+                for (int go=0; go<K; go++)
+                    t[go].resize(K);
+                
+                t = dot_mult_2_2(P, (mult_1_2(alphaT[el], (dot_mult_1_1(beta[el+1], B[el+1])))));
+                
+                // find sum of t <--can sum all values; only diag. will matter
+                int tsum=0;
+                for (int le=0; le<t[0].size(); le++)	
+                {
+                    for (int uk=0; uk<t[1].size(); uk++)
+                    {
+                        tsum = tsum + t[le][uk];
+                    }
+                }
 
-				/* sxi=sxi+t/sum(t(:));	*/
-				for (int ka=0; ka<K; ka++)
-				{
-					for (int ko=0; ko<K; ko++)
-					{
-						// Rightahere!
-						// t is 12 by 12...
-						//sxi[ka][ko] = sxi[ka][ko] + t[][]/tsum;
-					}
-				}
-		    }
+                /* sxi=sxi+t/sum(t(:));	*/
+                for (int ka=0; ka<K; ka++)
+                {
+                    for (int ko=0; ko<K; ko++)
+                    {
+                        // Rightahere!
+                        // t is 12 by 12...
+                        sxi[ka][ko] = sxi[ka][ko] + t[ka][ko]/tsum;
+                    }
+                }
+            }
 
 		    // Gammasum/Gammainit = 1xK, gammasum = Kx1
 			for (int u=0; u<K; u++)				      
