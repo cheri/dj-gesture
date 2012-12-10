@@ -49,7 +49,8 @@ int max(Mat *data, Mat *max) {
 int fill_rand_matrix(Mat *centroid) {
     for(int i = 0; i < centroid->rows; i++) {
         for(int j = 0; j < centroid->cols; j++) {
-            centroid->at<double>(i,j) = (double)rand()/RAND_MAX;
+            //centroid->at<double>(i,j) = (double)rand()/RAND_MAX;
+            centroid->at<double>(i,j) = 1;
         }
     }
 }
@@ -59,7 +60,6 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
     Mat cvdata;
     Mat data_min, data_max, data_diff;
     Mat centroid(8, 3, CV_64FC1);
-    Mat oldPositions(8, 3, CV_64FC1);
     Mat pointsInCluster(8, 1, CV_64FC1);
     double data_dim = 3, nbData = 60;
     double rnum = 0, pos_diff = 1.0;
@@ -97,7 +97,7 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
             }
             idx[d] = curAssignment;    
         }
-        oldPositions = centroid;
+        Mat oldPositions = centroid.clone();
 
         centroid.setTo(0);
         pointsInCluster.setTo(0); 
@@ -116,7 +116,20 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
             }
         }
         Mat posdiffMat = centroid - oldPositions;
+    printf("centroids\n");
+    for(int i=0; i < centroid.rows; i++) {
+        for(int j=0; j < centroid.cols; j++)
+            printf(" %f ", centroid.at<double>(i,j));
+        printf("\n");
+    }
+    printf("oldPositions\n");
+    for(int i=0; i < oldPositions.rows; i++) {
+        for(int j=0; j < oldPositions.cols; j++)
+            printf(" %f ", oldPositions.at<double>(i,j));
+        printf("\n");
+    }
         pos_diff = sum(sum(posdiffMat.mul(posdiffMat)))[0];
+        printf(" %f \n", pos_diff);
     }
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 3; j++) {
@@ -128,4 +141,10 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
     return 0;
 }
 
-
+#if 0
+    for(int i=0; i < oldPositions.rows; i++) {
+        for(int j=0; j < oldPositions.cols; j++)
+            printf(" %f ", oldPositions.at<double>(i,j));
+        printf("\n");
+    }
+#endif

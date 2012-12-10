@@ -90,7 +90,7 @@ int main(void)
     
     // Train the model:
     int cyc = 50;
-     dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
+     //dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
 #if 0
     /****TESTING****/    
     double sumLik = 0, minLik = 1000000, lik=0;
