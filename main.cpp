@@ -50,7 +50,7 @@ int main(void)
     /****TRAINING****/
     // Set priors:
     double P[12][12];
-    prior_transition_matrix(M, LR, P);
+    //prior_transition_matrix(M, LR, P);
 
     vector<vector<double> > ATrainBinned;
     ATrainBinned.resize(10);
@@ -66,9 +66,15 @@ int main(void)
         pP[i].resize(12);
     }
 
-    for(int xx=0; xx < pP.size(); xx++)
-        for(int yy=0; yy < pP[0].size(); yy++)
-            pP[xx][yy] = P[xx][yy];
+    for(int xx=0; xx < pP.size(); xx++) {
+        for(int yy=0; yy < pP[0].size(); yy++) {
+            if(xx == yy)
+                pP[xx][yy] = .5;
+            else
+                pP[xx][yy] = 0;
+        }
+    }
+                
     for(int xx=0; xx < ATrainBinned.size(); xx++) 
         for(int yy=0; yy < ATrainBinned[0].size(); yy++) 
             ATrainBinned[xx][yy] = TrainXClustered[xx][yy];
