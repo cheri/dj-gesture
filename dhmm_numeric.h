@@ -234,8 +234,6 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     LL.resize(50);
     int Lidx = 0; // index for LL
     double lik = 0, likbase=0, oldlik=0;
-/////////////////////////////////////////////////////////change thisss
-    cyc = 1;
     for (int cycle=0; cycle<cyc; cycle++)
     {
         vector<double> Scale;
@@ -246,7 +244,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
         vector<vector<double> > Gammaksum;
         Gammaksum.resize(num_bins);
 
-        for (int act=0; act<K; act++)
+        for (int act=0; act<num_bins; act++)
             Gammaksum[act].resize(K);
 
         //1xK vectors
@@ -258,18 +256,17 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
         for(int gii=0; gii < K; gii++) {
             Gammainit[0][gii] = 0;
             Gammasum[0][gii] = 0;
-            for(int gki = 0; gki < K; gki++) 
-                Gammaksum[gii][gki] = 0;
         }
+        for(int gkii = 0; gkii < num_bins; gkii++)
+            for(int gki = 0; gki < K; gki++) 
+                Gammaksum[gkii][gki] = 0;
         //originally a sparse, but we don't need no stinkin' optimization
         vector<vector<double> > sxi;
         sxi.resize(K);
 
         for (int ii=0;ii<K;ii++)
             sxi[ii].resize(K);
-/////////////////////////////////////////////////////////change thisss
-        //for (int n=0; n<N; n++)
-        for (int n=0; n<1; n++)
+        for (int n=0; n<N; n++)
         {
             vector<vector<double> > alpha, beta, gamma, gammaksum;
 
