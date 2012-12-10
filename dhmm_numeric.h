@@ -352,15 +352,14 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 alpha[0][ake]= alpha[0][ake] / scale[0];
             }
 
+            double asum;
             /*alpha(ellect,:)=(alpha(ellect-1,:)*P).*B(ellect,:);*/
-            double asum=0;	
             for (int ellect=1; ellect<T[n]; ellect++)
             {
+                asum=0;	
                 vector<double> temp = mult_1_2(alpha[ellect-1], P);
-                for(int i=0; i < temp.size(); i++) {
+                for(int i=0; i < temp.size(); i++)
                     alpha[ellect][i] = temp[i];
-                    printf(" %f ", temp[i]);
-                }
                 //Rightahere!
                 // P is 12x12 (sparse) - two for loops (below) to account for this...
                 // alpha is T(n) by K
@@ -375,17 +374,15 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 //alpha(i,:)=alpha(i,:)/scale(i);
                 for (int an=0; an<alpha[0].size(); an++)
                     alpha[ellect][an] = alpha[ellect][an] / scale[ellect];		
-                printf("\n");
             }
             /*for(int i=0; i < alpha.size(); i++) {
                 for(int j=0; j < alpha[0].size(); j++)
                         printf(" %f ", alpha[i][j]);
                 printf("\n");
             }*/
-            return ;
 
             for (int s=0;s<K; s++) 
-                beta[T[n]][s]= (double)1/(scale[T[n]]);
+                beta[T[n]-1][s]= (double)1/(scale[T[n]-1]);
             /* find transpose of P(12x12) */
             vector<vector<double> > PT;
             PT.resize(P[0].size());
@@ -403,7 +400,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 {
                     // Rightahere!
                     beta[v][w]=beta[v+1][w]*B[v+1][w]/scale[v]; //*(P')
-                }	
+                }
                 beta[v] = mult_1_2(beta[v], PT);
             }
 
@@ -419,8 +416,8 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
             vector<vector<double> > gammasum;
             gammasum.resize(gamma.size());
-            for(int gsi = 0; gsi < gammasum.size(); gsi++)
-                gammasum.resize(1);
+            for(int gsi = 0; gsi < gamma.size(); gsi++)
+                gammasum[gsi].resize(1);
 
             for (int row=0; row< gamma.size(); row++) 
             {
@@ -466,13 +463,15 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     alphaT[sar][nava] = alpha[nava][sar];
 
             //Rightahere!
-            for (int el=0; el<T[n]-1; el++)	//but this can't be the first var considering the matrix dims...
+            for (int el=0; el<T[n]-2; el++)	//but this can't be the first var considering the matrix dims...
             {
                 vector<vector<double> > t;
                 t.resize(K);
 
                 for (int go=0; go<K; go++)
                     t[go].resize(K);
+                printf(" beta %d B %d\n", beta[0].size(), B[0].size());
+                return;
 
                 t = dot_mult_2_2(P, (mult_1_1_2(alphaT[el], (dot_mult_1_1(beta[el+1], B[el+1])))));
 
@@ -498,7 +497,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     for (int z=0; z<K; z++)
                         Gammaksum[a][z] += gammaksum[a][z];
 
-                for (int y=0; y<T[n]-1; y++)	
+                for (int y=0; y<T[n]-2; y++)	
                     Scale[y] += log(scale[y]);
 
                 Scale[T[n] - 1] += log(scale[T[n] -1]);
