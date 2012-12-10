@@ -50,7 +50,7 @@ int main(void)
     /****TRAINING****/
     // Set priors:
     double P[12][12];
-    //prior_transition_matrix(M, LR, P);
+    prior_transition_matrix(M, LR, P);
 
     vector<vector<double> > ATrainBinned;
     ATrainBinned.resize(10);
@@ -68,11 +68,10 @@ int main(void)
 
     for(int xx=0; xx < pP.size(); xx++) {
         for(int yy=0; yy < pP[0].size(); yy++) {
-            if(xx == yy)
-                pP[xx][yy] = .5;
-            else
-                pP[xx][yy] = 0;
+            pP[xx][yy] = P[xx][yy];
+            printf(" %f ", P[xx][yy]);
         }
+        printf("\n");
     }
                 
     for(int xx=0; xx < ATrainBinned.size(); xx++) 

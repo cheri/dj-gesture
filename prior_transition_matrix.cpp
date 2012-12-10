@@ -15,9 +15,13 @@ void prior_transition_matrix(int K, int LR, double P[12][12])
 	/* eye(K) returns K*K identity matrix*/
 	//P = ((1/LR))*eye(K);
     double x = (double)1/LR;
+    
     for(int i = 0; i < 12; i++) {
         for(int j=0; j < 12;j++) {
-            P[i][j] = x;
+            if(i==j)
+                P[i][j] = x;
+            else
+                P[i][j] = 0;
         }
     }
 

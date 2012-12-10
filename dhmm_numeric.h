@@ -485,9 +485,9 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     t[go].resize(K);
                     t_1[go].resize(K);
                 }
+                //printf( " %d\n", el);
                 temp = dot_mult_1_1(beta[el+1], B[el+1]);
                 t_1 = mult_1_1_2( alpha[el], temp); 
-                printf( " %d\n", el);
     /*
                 for(int i=0; i < K; i++) {
                     for(int j=0; j < K;j++) {
