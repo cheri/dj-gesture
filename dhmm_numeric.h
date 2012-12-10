@@ -223,15 +223,6 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     // transition matrix
     vector<vector<double> > P = pP;
     P=rdiv(P,rsum(P));
-    /*for(int i=0; i < K; i++) {
-        for(int j=0; j < K;j++) {
-            if(i==j) {
-                P[i][j] = .5;
-                P[i
-            printf(" %f ", P[i][j]);
-        }
-        printf("\n");
-    }*/
 
     /* This is useful if the transition matrix is 
      * initialized with many zeros, i.e. for a 
@@ -349,8 +340,6 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                  * B = 1 x K and PiT is Kx1: automatic broadcasting operation - will generate KxK??
                  */
                 alpha[0][ake] = Pi[0][ake] * B[0][ake];
-                    //for(int j=0; j < Pi.size(); j++)
-                      //  printf(" %f ", Pi[0][j]);
 
                 //scale(1)=sum(alpha(1,:));
                 double alphasum=0;
@@ -385,11 +374,6 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 for (int an=0; an<alpha[0].size(); an++)
                     alpha[ellect][an] = alpha[ellect][an] / scale[ellect];		
             }
-            /*for(int i=0; i < alpha.size(); i++) {
-                for(int j=0; j < alpha[0].size(); j++)
-                        printf(" %f ", alpha[i][j]);
-                printf("\n");
-            }*/
 
             for (int s=0;s<K; s++) 
                 beta[T[n]-1][s]= (double)1/(scale[T[n]-1]);
@@ -444,15 +428,19 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                  * m = findstr(alphabet, Xcurrent(i));
                  */
 
-                int mIndex2 = 0;
+                int mIndex2 = -1;
 
-                for (int ra=0; ra<bins[0].size(); ra++)
+                for (int ra=0; ra<bins.size(); ra++)
                 {
                     if (bins[ra][0] == Xcurrent[egral])
                     {
                         mIndex2 = ra;
                         break;
                     }
+                }
+                if(mIndex2 == -1) {
+                    printf("Error!\n");
+                    return;
                 }
 
                 // gammaksum = T[n] x K	
@@ -485,17 +473,8 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     t[go].resize(K);
                     t_1[go].resize(K);
                 }
-                //printf( " %d\n", el);
                 temp = dot_mult_1_1(beta[el+1], B[el+1]);
                 t_1 = mult_1_1_2( alpha[el], temp); 
-    /*
-                for(int i=0; i < K; i++) {
-                    for(int j=0; j < K;j++) {
-                        printf(" %f ", P[i][j]);
-                    }
-                    printf("\n");
-                }
-                printf("\n\n\n"); */
                 t = dot_mult_2_2(P, t_1);
                 // find sum of t <--can sum all values; only diag. will matter
                 double tsum=0;
@@ -515,9 +494,14 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     Gammasum[0][u] += gammasum[u][0];
                 }
 
-                for(int a=0; a<num_bins; a++)
-                    for (int z=0; z<K; z++)
+                for(int a=0; a<num_bins; a++) {
+                    for (int z=0; z<K; z++) {
                         Gammaksum[a][z] += gammaksum[a][z];
+                //        printf(" %f %f \n", Gammaksum[a][z], gammaksum[a][z]);
+                    }
+                  //  printf("\n");
+                }
+                //return;
 
                 for (int y=0; y<T[n]-1; y++)	
                     Scale[y] += log(scale[y]);
@@ -565,9 +549,14 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             else if ( (lik-likbase) < (1+tol)*(oldlik-likbase) || !IsFiniteNumber(lik))
             {
                 printf("\nend\n");
-                return;
+               /* for(int i=0; i < E.size(); i++) {
+                    for(int j=0; j < E[0].size(); j++)
+                        printf(" %f ", E[i][j]);
+                    printf("\n");
+                }
+                return; */
             }
-
+        printf(" %d %d\n",n, cycle);
         } //end loop over cyc
     }
 }
