@@ -45,7 +45,6 @@ bool IsFiniteNumber(double x)
 vector<double> dot_mult_1_1(vector<double> mat1, vector<double> mat2) {
     vector<double> prod;
     prod.resize(mat1.size());
-    printf("%s\n", __FUNCTION__);
     for(int i=0; i < mat1.size(); i++) {
         prod[i] = mat1[i] * mat2[i];        
     }
@@ -223,6 +222,12 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
     // transition matrix
     vector<vector<double> > P = pP;
+    for(int i=0; i < K; i++) {
+        for(int j=0; j < K;j++) {
+            printf(" %f ", pP[i][j]);
+        }
+        printf("\n");
+    }
     P=rdiv(P,rsum(P));
 
     /* This is useful if the transition matrix is 
@@ -479,7 +484,17 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 }
                 temp = dot_mult_1_1(beta[el+1], B[el+1]);
                 t_1 = mult_1_1_2( alphaT[el], temp); 
-
+    /*
+                for(int i=0; i < K; i++) {
+                    for(int j=0; j < K;j++) {
+                        printf(" %f ", P[i][j]);
+                    }
+                    printf("\n");
+                }
+                printf("\n\n\n"); */
+                if(el == 11) {
+                    return;
+                }
                 t = dot_mult_2_2(P, t_1);
                 // find sum of t <--can sum all values; only diag. will matter
                 double tsum=0;
