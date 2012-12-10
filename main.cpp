@@ -45,7 +45,7 @@ int main(void)
     double TrainXClustered[10][60], TestXClustered[10][60], centroids[8][3];
     get_point_centroids(training, N, D, centroids);
     get_point_clusters(training, centroids, D, TrainXClustered);
-    get_point_clusters(testing, centroids, D, TestXClustered);
+//    get_point_clusters(testing, centroids, D, TestXClustered);
 
     /****TRAINING****/
     // Set priors:
@@ -65,6 +65,17 @@ int main(void)
     {
         pP[i].resize(12);
     }
+
+    for(int xx=0; xx < pP.size(); xx++)
+        for(int yy=0; yy < pP[0].size(); yy++)
+            pP[xx][yy] = P[xx][yy];
+/*    for(int xx=0; xx < ATrainBinned.size(); xx++) {
+        for(int yy=0; yy < ATrainBinned[0].size(); yy++) {
+            ATrainBinned[xx][yy] = TrainXClustered[xx][yy];
+            printf(" %f ", TrainXClustered[xx][yy]);
+            }
+        printf("\n");
+    } */
 
     vector<vector<double> > bins;
     bins.resize(8);

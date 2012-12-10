@@ -67,19 +67,16 @@ int i;
 	K = size(centroids,1);*/
 
     kmeans(mean, K, idx, arr_centroid, pCluster);
-#if 0
-    int j;
-    for(i = 0; i < 8; i++) {
-        for(j = 0; j < 3; j++) {
-            printf(" %f ", i, j, arr_centroid[i][j]);
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 3; j++) {
+            printf(" %f ", arr_centroid[i][j]);
         }
         printf(" points in cluster: %f at %d\n", pCluster[i][0], i);
-    }   
-    int c;
-    for(c = 0; c < 60; c++) {
-        printf("%d:%d\n", c, idx[c]);
     }
-#endif
+    int c;
+    //for(c = 0; c < 60; c++) {
+    //    printf("%d:%d\n", c, idx[c]);
+    //}
  }
 
 

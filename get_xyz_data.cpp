@@ -89,9 +89,9 @@ void get_xyz_data(string path, string name, double data[60][10][3])
     {
         for (int c = 0; c < 10; c++)
         {
-            data[d][c][0] = x[c][d];  
-            data[d][c][1] = y[c][d];  
-            data[d][c][2] = z[c][d];  
+            data[d][c][0] = x[d][c];  
+            data[d][c][1] = y[d][c];  
+            data[d][c][2] = z[d][c];  
         }
     }
 }

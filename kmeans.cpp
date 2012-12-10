@@ -6,12 +6,11 @@
 using namespace std;
 using namespace cv;
 int min(Mat *data, Mat *min) {
-    int i = 0;
     double min_val0, min_val1, min_val2;
 
     min_val0 = min_val1 = min_val2 = 10000;
 
-    for(i = 0; i < data->rows; i++) {
+    for(int i = 0; i < data->rows; i++) {
         if(min_val0 > data->at<double>( i, 0))
             min_val0 = data->at<double>(i, 0);
         if(min_val1 > data->at<double>( i, 1))
@@ -28,11 +27,10 @@ int min(Mat *data, Mat *min) {
 }
 
 int max(Mat *data, Mat *max) {
-    int i = 0;
     double max_val0, max_val1, max_val2; 
     max_val0 = max_val1 = max_val2 = -10000;
     
-    for(i = 0; i < data->rows; i++) {
+    for(int i = 0; i < data->rows; i++) {
         if(max_val0 < data->at<double>( i, 0))
             max_val0 = data->at<double>(i, 0);
         if(max_val1 < data->at<double>( i, 1))
@@ -49,9 +47,8 @@ int max(Mat *data, Mat *max) {
 }
  
 int fill_rand_matrix(Mat *centroid) {
-    int i, j;
-    for(i = 0; i < centroid->rows; i++) {
-        for(j = 0; j < centroid->cols; j++) {
+    for(int i = 0; i < centroid->rows; i++) {
+        for(int j = 0; j < centroid->cols; j++) {
             centroid->at<double>(i,j) = (double)rand()/RAND_MAX;
         }
     }
@@ -79,30 +76,18 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
     data_diff = data_max - data_min;
 
     fill_rand_matrix(&centroid);
-    int i;
-#if 0
-    for(i = 0; i < 8; i++) {
-        printf("%f %f %f\n",  centroid.at<double>(i,0),  centroid.at<double>(i,1), centroid.at<double>(i,2));
-    }
-#endif
-    for(i = 0; i < centroid.rows; i++) {
+    for(int i = 0; i < centroid.rows; i++) {
         centroid.row(i) = centroid.row(i).mul(data_diff);
         centroid.row(i) = centroid.row(i) + data_min;
     }
-#if 0
-    for(i = 0; i < 8; i++) {
-        printf("%f %f %f\n",  centroid.at<double>(i,0),  centroid.at<double>(i,1), centroid.at<double>(i,2));
-    }
-#endif
     while(pos_diff > 0.0) {
-        int d,c;
-        for(d = 0; d < cvdata.rows; d++) {
+        for(int d = 0; d < cvdata.rows; d++) {
             Mat min_diff = cvdata.row(d) - centroid.row(1);
             Mat mat_diff = min_diff * min_diff.t();
             double min_diff_t = mat_diff.at<double>(0,0);
             int curAssignment = 1;
-            
-            for(c=1; c < k; c++) {
+
+            for(int c=1; c < k; c++) {
                 Mat diff2c = cvdata.row(d) - centroid.row(c);
                 Mat mat_diff2c = diff2c * diff2c.t();
                 if(min_diff_t >= mat_diff2c.at<double>(0,0)) {
@@ -113,15 +98,15 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
             idx[d] = curAssignment;    
         }
         oldPositions = centroid;
-        
+
         centroid.setTo(0);
         pointsInCluster.setTo(0); 
 
-        for(d = 0; d < cvdata.rows; d++) {
+        for(int d = 0; d < cvdata.rows; d++) {
             centroid.row(idx[d]) += cvdata.row(d);
             pointsInCluster.at<double>(idx[d],1) = pointsInCluster.at<double>(idx[d],1) + 1;
         }
-        for(c = 0; c < k; c++) {
+        for(int c = 0; c < k; c++) {
             if(pointsInCluster.at<double>(c,1) != 0) {
                 centroid.row(c) = centroid.row(c) / pointsInCluster.at<double>(c,1);
             } else {
@@ -133,9 +118,8 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
         Mat posdiffMat = centroid - oldPositions;
         pos_diff = sum(sum(posdiffMat.mul(posdiffMat)))[0];
     }
-    int j;
-    for(i = 0; i < 8; i++) {
-        for(j = 0; j < 3; j++) {
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 3; j++) {
             arr_centroid[i][j] = centroid.at<double>(i,j);         
         }
         pCluster[i][0] = pointsInCluster.at<double>(i,0);
