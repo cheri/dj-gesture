@@ -44,16 +44,19 @@ bool IsFiniteNumber(double x)
 
 vector<double> dot_mult_1_1(vector<double> mat1, vector<double> mat2) {
     vector<double> prod;
-
+    prod.resize(mat1.size());
+    printf("%s\n", __FUNCTION__);
     for(int i=0; i < mat1.size(); i++) {
         prod[i] = mat1[i] * mat2[i];        
     }
-
     return prod;
 }
 
 vector<vector<double> > dot_mult_2_2(vector<vector<double> > mat1, vector<vector<double> > mat2) {
     vector<vector<double> > prod;
+    prod.resize(mat1.size());
+    for(int i=0; i < mat1.size(); i++)
+        prod[i].resize(mat1[0].size());
     for(int i=0; i < mat1.size(); i++) {
         for(int j=0; j < mat1[0].size(); j++) {
             prod[i][j] = mat1[i][j] * mat2[i][j];
@@ -73,10 +76,9 @@ vector<vector<double> > mult_1_1_2(vector<double> mat1, vector<double> mat2) {
     for(i=0; i < m; i++) {
         mat3[i].resize(c);
     }
-    for(i=0; i<m; i++) {
-        for(j=0; j<c; j++)
-            mat3[i][j] = mat1[i] * mat2[j];
-    }
+    for(i=0; i<m; i++) 
+        for(j=0; j<c; j++) 
+            mat3[i][j] = (double)(mat1[i] * mat2[j]);
     return mat3;
 }
 
@@ -463,18 +465,22 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     alphaT[sar][nava] = alpha[nava][sar];
 
             //Rightahere!
-            for (int el=0; el<T[n]-2; el++)	//but this can't be the first var considering the matrix dims...
+            for (int el=0; el<T[n]-1; el++)	//but this can't be the first var considering the matrix dims...
             {
-                vector<vector<double> > t;
+                vector<vector<double> > t, t_1;
                 t.resize(K);
+                t_1.resize(K);
+                vector<double>  temp;
+                temp.resize(K);
 
-                for (int go=0; go<K; go++)
+                for (int go=0; go<K; go++) {
                     t[go].resize(K);
-                printf(" beta %d B %d\n", beta[0].size(), B[0].size());
-                return;
+                    t_1[go].resize(K);
+                }
+                temp = dot_mult_1_1(beta[el+1], B[el+1]);
+                t_1 = mult_1_1_2( alphaT[el], temp); 
 
-                t = dot_mult_2_2(P, (mult_1_1_2(alphaT[el], (dot_mult_1_1(beta[el+1], B[el+1])))));
-
+                t = dot_mult_2_2(P, t_1);
                 // find sum of t <--can sum all values; only diag. will matter
                 double tsum=0;
                 for (int le=0; le<t.size(); le++)	
@@ -497,7 +503,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                     for (int z=0; z<K; z++)
                         Gammaksum[a][z] += gammaksum[a][z];
 
-                for (int y=0; y<T[n]-2; y++)	
+                for (int y=0; y<T[n]-1; y++)	
                     Scale[y] += log(scale[y]);
 
                 Scale[T[n] - 1] += log(scale[T[n] -1]);
