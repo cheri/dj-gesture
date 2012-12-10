@@ -15,7 +15,7 @@
 #define GetCurrentDir getcwd
 
 using namespace std;
-int main()
+int main(void)
 {
 
     /* Initialize XYZ "data" vectors */
@@ -144,4 +144,4 @@ int main()
     cout << ("\n");
 #endif
     return 0;
-} 
+}
