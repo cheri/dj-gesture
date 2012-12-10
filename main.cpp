@@ -69,28 +69,20 @@ int main(void)
     for(int xx=0; xx < pP.size(); xx++)
         for(int yy=0; yy < pP[0].size(); yy++)
             pP[xx][yy] = P[xx][yy];
-/*    for(int xx=0; xx < ATrainBinned.size(); xx++) {
-        for(int yy=0; yy < ATrainBinned[0].size(); yy++) {
+    for(int xx=0; xx < ATrainBinned.size(); xx++) 
+        for(int yy=0; yy < ATrainBinned[0].size(); yy++) 
             ATrainBinned[xx][yy] = TrainXClustered[xx][yy];
-            printf(" %f ", TrainXClustered[xx][yy]);
-            }
-        printf("\n");
-    } */
 
     vector<vector<double> > bins;
     bins.resize(8);
     for (int i=0; i<8; i++)
-    {
         bins[i].resize(1);
-    }
     for (double i=0; i<8; i++)
-    {
-        bins[i][0] = (i+1.0);
-    }
+        bins[i][0] = i;
     
     // Train the model:
     int cyc = 50;
-     //dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
+     dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .00001); 
 #if 0
     /****TESTING****/    
     double sumLik = 0, minLik = 1000000, lik=0;

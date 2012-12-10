@@ -104,11 +104,11 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
 
         for(int d = 0; d < cvdata.rows; d++) {
             centroid.row(idx[d]) += cvdata.row(d);
-            pointsInCluster.at<double>(idx[d],1) = pointsInCluster.at<double>(idx[d],1) + 1;
+            pointsInCluster.at<double>(idx[d],0) += 1;
         }
         for(int c = 0; c < k; c++) {
-            if(pointsInCluster.at<double>(c,1) != 0) {
-                centroid.row(c) = centroid.row(c) / pointsInCluster.at<double>(c,1);
+            if(pointsInCluster.at<double>(c,0) != 0) {
+                centroid.row(c) = centroid.row(c) / pointsInCluster.at<double>(c,0);
             } else {
                 Mat randx(1, 3, CV_64FC1);
                 fill_rand_matrix(&randx);
@@ -116,20 +116,7 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
             }
         }
         Mat posdiffMat = centroid - oldPositions;
-    printf("centroids\n");
-    for(int i=0; i < centroid.rows; i++) {
-        for(int j=0; j < centroid.cols; j++)
-            printf(" %f ", centroid.at<double>(i,j));
-        printf("\n");
-    }
-    printf("oldPositions\n");
-    for(int i=0; i < oldPositions.rows; i++) {
-        for(int j=0; j < oldPositions.cols; j++)
-            printf(" %f ", oldPositions.at<double>(i,j));
-        printf("\n");
-    }
         pos_diff = sum(sum(posdiffMat.mul(posdiffMat)))[0];
-        printf(" %f \n", pos_diff);
     }
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 3; j++) {

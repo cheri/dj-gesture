@@ -33,9 +33,9 @@ void get_point_clusters(double data[60][10][3], double centroids[8][3], int D, d
         {
             double temp[8];
         	for (int j = 0; j < K; j++)
-        	{	
-        		temp[j] = sqrt( square(centroids[j][0] - data[c][d][0]) + square(centroids[j][1] - data[c][d][1])+ square(centroids[j][2] - data[c][d][2]));
-        	}
+            {	
+                temp[j] = sqrt( pow(centroids[j][0] - data[c][d][0], 2) + pow(centroids[j][1] - data[c][d][1], 2)+ pow(centroids[j][2] - data[c][d][2], 2));
+            }
             XClustered[d][c] = min(temp);
         }
     }

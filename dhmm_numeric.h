@@ -108,12 +108,14 @@ vector<double> mult_1_2(vector<double> mat1, vector<vector<double> >mat2) {
     int i, j, k;
     c = mat1.size();
     n = mat2[0].size();
+    //printf("c: %d n: %d\n", c, n);
     vector<double> mat3;
     mat3.resize(c);
     for(j=0; j<n; j++) {
         mat3[j] = 0;
-        for(k=0; k<c; k++)
+        for(k=0; k<c; k++) {
             mat3[j] += mat1[k] * mat2[k][j];
+        }
     }
     return mat3;
 }
@@ -141,6 +143,7 @@ vector<double> mult_2_1(vector<vector<double> >mat1, vector<double> mat2) {
 vector<vector<double> > randomMatrix(int m, int n)
 {
 	// initialize matrix
+    srand ( time(NULL) );  //random seed
 	vector<vector<double> > randMatrix;
 	randMatrix.resize(m);
 	for (int rm=0; rm<m; rm++)
@@ -153,7 +156,6 @@ vector<vector<double> > randomMatrix(int m, int n)
 	{
 		for (int j=0; j<n; j++)
 		{
-  			srand ( time(NULL) );  //random seed
 			randMatrix[i][j] = ((double) rand() / (RAND_MAX));
 		}
 	}
@@ -162,7 +164,6 @@ vector<vector<double> > randomMatrix(int m, int n)
 
 void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<vector<double> > bins, int K, int cyc, double tol)
 {
-    int D = X[1].size();
     int num_bins = bins.size();
 
     float epsi = pow(1.0,-10);
@@ -175,7 +176,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     T.resize(N);
 
     // initialize with ones
-    for (int i=0; i<N; i++)
+    for (int i=0; i<N; i++) 
         T[i] = X[i].size();	
 
     //double TMAX = *max_element(T.begin(), T.end());
@@ -323,12 +324,12 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             scale.resize(T[n]);	
 
             // find transpose of Pi (1xK becomes Kx1)
-            vector<vector<double> > PiT;
+            /*vector<vector<double> > PiT;
             PiT.resize(K);
-            for (int pik=0;pik<K; pik++)
-            {
-                PiT[pik][0] = Pi[0][pik];	
-            }
+            for (int pik=0;pik<K; pik++) {
+                PiT[pik].resize(1);
+                PiT[pik][0] = Pi[0][pik];
+            }*/	
 
 
             for (int ake=0; ake<K; ake++)	
@@ -337,7 +338,9 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                  *  alpha(1,:)=Pi(:)'.*B(1,:);
                  * B = 1 x K and PiT is Kx1: automatic broadcasting operation - will generate KxK??
                  */
-                alpha[0][ake] = PiT[ake][0] * B[0][ake];
+                alpha[0][ake] = Pi[0][ake] * B[0][ake];
+                    //for(int j=0; j < Pi.size(); j++)
+                      //  printf(" %f ", Pi[0][j]);
 
                 //scale(1)=sum(alpha(1,:));
                 double alphasum=0;
@@ -353,12 +356,16 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             double asum=0;	
             for (int ellect=1; ellect<T[n]; ellect++)
             {
-                alpha[ellect] = mult_1_2(alpha[ellect], P);
+                vector<double> temp = mult_1_2(alpha[ellect-1], P);
+                for(int i=0; i < temp.size(); i++) {
+                    alpha[ellect][i] = temp[i];
+                    printf(" %f ", temp[i]);
+                }
                 //Rightahere!
                 // P is 12x12 (sparse) - two for loops (below) to account for this...
                 // alpha is T(n) by K
                 // B is 1 x K
-                for (int set; set < alpha[0].size(); set++) {
+                for (int set= 0 ; set < alpha[0].size(); set++) {
                     alpha[ellect][set]=alpha[ellect-1][set]*B[ellect][set];
                     asum += alpha[ellect][set];
                 }
@@ -368,20 +375,26 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 //alpha(i,:)=alpha(i,:)/scale(i);
                 for (int an=0; an<alpha[0].size(); an++)
                     alpha[ellect][an] = alpha[ellect][an] / scale[ellect];		
+                printf("\n");
             }
+            /*for(int i=0; i < alpha.size(); i++) {
+                for(int j=0; j < alpha[0].size(); j++)
+                        printf(" %f ", alpha[i][j]);
+                printf("\n");
+            }*/
+            return ;
 
-            for (int s=0;s<K; s++)	
-                beta[T[n]][s]= 1/(scale[T[n]]);
-
+            for (int s=0;s<K; s++) 
+                beta[T[n]][s]= (double)1/(scale[T[n]]);
             /* find transpose of P(12x12) */
             vector<vector<double> > PT;
-            PT.resize(P[1].size());
+            PT.resize(P[0].size());
 
-            for(int pc=0; pc<P[1].size();pc++)
-                PT[pc].resize(P[0].size());
+            for(int pc=0; pc<P[0].size();pc++)
+                PT[pc].resize(P.size());
 
-            for (int px=0;px<P[0].size(); px++)
-                for(int py=0; py<P[1].size();py++)
+            for (int px=0;px<P.size(); px++)
+                for(int py=0; py<P[0].size();py++)
                     PT[py][px] = P[px][py];
 
             for (int v=T[n]-2; v>=0; v--)
@@ -389,8 +402,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 for(int w=0; w<beta[0].size(); w++)
                 {
                     // Rightahere!
-                    // again, PT is technically 12x12...potential issues here
-                    beta[v][w]=beta[v+1][w]*B[v+1][w]/scale[w]; //*(P')
+                    beta[v][w]=beta[v+1][w]*B[v+1][w]/scale[v]; //*(P')
                 }	
                 beta[v] = mult_1_2(beta[v], PT);
             }
@@ -399,7 +411,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             {
                 for(int fault=0; fault<K; fault++)
                 {
-                    gamma[seg][fault] = alpha[seg][fault]*beta[seg][fault]+epsi;	
+                    gamma[seg][fault] = alpha[seg][fault]*beta[seg][fault] +epsi;	
                 }
             }
 
