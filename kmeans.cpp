@@ -49,8 +49,7 @@ int max(Mat *data, Mat *max) {
 int fill_rand_matrix(Mat *centroid) {
     for(int i = 0; i < centroid->rows; i++) {
         for(int j = 0; j < centroid->cols; j++) {
-            //centroid->at<double>(i,j) = (double)rand()/RAND_MAX;
-            centroid->at<double>(i,j) = 1;
+            centroid->at<double>(i,j) = (double)rand()/RAND_MAX;
         }
     }
 }

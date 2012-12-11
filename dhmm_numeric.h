@@ -157,8 +157,7 @@ vector<vector<double> > randomMatrix(int m, int n)
 	{
 		for (int j=0; j<n; j++)
 		{
-			//randMatrix[i][j] = ((double) rand() / (RAND_MAX));
-			randMatrix[i][j] = 1;
+			randMatrix[i][j] = ((double) rand() / (RAND_MAX));
 		}
 	}
 	return randMatrix;
@@ -265,6 +264,10 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
         for (int ii=0;ii<K;ii++)
             sxi[ii].resize(K);
+        for(int i =0; i < sxi.size(); i++) 
+            for(int j=0; j < sxi[0].size(); j++) 
+                sxi[i][j] = 0;
+
         for (int n=0; n<N; n++)
         {
             vector<vector<double> > alpha, beta, gamma, gammaksum;
@@ -323,11 +326,11 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
             // find transpose of Pi (1xK becomes Kx1)
             /*vector<vector<double> > PiT;
-            PiT.resize(K);
-            for (int pik=0;pik<K; pik++) {
-                PiT[pik].resize(1);
-                PiT[pik][0] = Pi[0][pik];
-            }*/	
+              PiT.resize(K);
+              for (int pik=0;pik<K; pik++) {
+              PiT[pik].resize(1);
+              PiT[pik][0] = Pi[0][pik];
+              }*/	
 
 
             for (int i=0; i<K; i++)	
@@ -409,17 +412,17 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             gamma=rdiv(gamma,rsum(gamma));
 
             vector<vector<double> > gammasum;
-            gammasum.resize(gamma.size());
-            for(int gsi = 0; gsi < gamma.size(); gsi++)
+            gammasum.resize(gamma[0].size());
+            for(int gsi = 0; gsi < gamma[0].size(); gsi++)
                 gammasum[gsi].resize(1);
 
-            for (int row=0; row< gamma.size(); row++) 
+            for (int col=0; col< gamma[0].size(); col++) 
             {
                 double colSum = 0;
-                for(int col=0; col < K; col++)
+                for(int row=0; row < gamma.size(); row++) {
                     colSum += gamma[row][col];
-
-                gammasum[row][0] = colSum;
+                }
+                gammasum[col][0] = colSum;
             }
 
             for (int egral=0; egral<T[n]; egral++)
@@ -476,13 +479,6 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 temp = dot_mult_1_1(beta[el+1], B[el+1]);
                 t_1 = mult_1_1_2( alpha[el], temp); 
                 t = dot_mult_2_2(P, t_1);
-                for(int i=0; i < t.size(); i++) {
-                    for(int j=0; j < t.size(); j++) {
-                        printf(" %f ", t[i][j]);
-                    }
-                    printf("\n");
-                }
-                return;
                 // find sum of t <--can sum all values; only diag. will matter
                 double tsum=0;
                 for (int le=0; le<t.size(); le++)	
@@ -493,65 +489,67 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 for (int ka=0; ka<K; ka++)
                     for (int ko=0; ko<K; ko++)
                         sxi[ka][ko] = sxi[ka][ko] + t[ka][ko]/tsum;
+            } 
 
-                // Gammasum/Gammainit = 1xK, gammasum = Kx1
-                for (int u=0; u<K; u++)				      
-                {
-                    Gammainit[0][u] += gamma[0][u];	
-                    Gammasum[0][u] += gammasum[u][0];
+            // Gammasum/Gammainit = 1xK, gammasum = Kx1
+            for (int u=0; u<K; u++)				      
+            {
+                Gammainit[0][u] += gamma[0][u];	
+                Gammasum[0][u] += gammasum[u][0];
+            }
+
+            for(int a=0; a<num_bins; a++) {
+                for (int z=0; z<K; z++) {
+                    Gammaksum[a][z] += gammaksum[a][z];
                 }
-
-                for(int a=0; a<num_bins; a++) {
-                    for (int z=0; z<K; z++) {
-                        Gammaksum[a][z] += gammaksum[a][z];
-                    }
-                }
-
-                for (int y=0; y<T[n]-1; y++)	
-                    Scale[y] += log(scale[y]);
-
-                Scale[T[n] - 1] += log(scale[T[n] -1]);
-
-            } //end loop over N
-
-            /* M STEP */
-            // outputs
-            E = cdiv_2(Gammaksum, Gammasum);
-
-            // transition matrix (orig. sparse)
-            P = rdiv(sxi, rsum(sxi));	
-
-            //P = P*eye(size(P,1));  // Rightahere!  ...why?  isn't this just P?
-
-            // priors 
-            /* find sum */
-            double sum = 0;
-            for (int r = 0; r < K; r++)
-                sum = sum + Gammainit[0][r];
-
-            for (int q = 0; q < K; q++)
-                Pi[0][q] = Gammainit[0][q] / sum;	
-
-            oldlik=lik;
-            /* lik = sum(Scale); */
-            for (int ch=0; ch<TMAX; ch++)
-                lik = lik + Scale[ch];
-
-            float smallNum = pow(1.0,-6);
-
-            if (cycle<=2)
-            {
-                likbase=lik;
             }
-            else if (lik < (oldlik - smallNum))
-            {
-                printf("vionum_binstion\n");
-            }
-            else if ( (lik-likbase) < (1+tol)*(oldlik-likbase) || !IsFiniteNumber(lik))
-            {
-                printf("\nend\n");
-                return; 
-            }
-        } //end loop over cyc
-    }
+
+            for (int y=0; y<T[n]-1; y++)	
+                Scale[y] += log(scale[y]);
+
+            Scale[T[n] - 1] += log(scale[T[n] -1]);
+        }
+
+        /* M STEP */
+        // outputs
+        E = cdiv_2(Gammaksum, Gammasum);
+
+        // transition matrix (orig. sparse)
+        P = rdiv(sxi, rsum(sxi));	
+
+        //P = P*eye(size(P,1));  // Rightahere!  ...why?  isn't this just P?
+
+        // priors 
+        /* find sum */
+        double sum = 0;
+        for (int r = 0; r < K; r++)
+            sum = sum + Gammainit[0][r];
+
+        for (int q = 0; q < K; q++)
+            Pi[0][q] = Gammainit[0][q] / sum;	
+
+        oldlik=lik;
+        /* lik = sum(Scale); */
+        lik  = 0;
+        for (int ch=0; ch<TMAX; ch++)
+            lik +=  Scale[ch];
+        printf( " %f ", lik);
+
+        double smallNum = 1.0e-6;
+        printf("\ncycle %d log likelihood = %f \n",cycle,lik);
+
+        if (cycle<=2)
+        {
+            likbase=lik;
+        }
+        else if (lik < (oldlik - smallNum))
+        {
+            printf("vionum_binstion\n");
+        }
+        else if ( (lik-likbase) < (1+tol)*(oldlik-likbase) || !IsFiniteNumber(lik))
+        {
+            printf("\nend\n");
+            return; 
+        }
+    } //end loop over cyc
 }
