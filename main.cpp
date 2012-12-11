@@ -221,9 +221,12 @@ int main(void) {
     get_testing_attr("l", ATestBinned_l, centroids_l); 
 
     int j =2;
-    printf(" %f %f\n", pr_hmm(ATestBinned_x[j], P_x, ET_x, Pi_x), gthresh_x);
-    printf(" %f %f\n", pr_hmm(ATestBinned_x[j], P_l, ET_l, Pi_l), gthresh_l);
-    printf(" %f %f\n", pr_hmm(ATestBinned_x[j], P_c, ET_c, Pi_c), gthresh_c);
+    if(pr_hmm(ATestBinned_x[j], P_x, ET_x, Pi_x) > gthresh_x)
+        system("canberra-gtk-play --file=X.ogg");
+    else if(pr_hmm(ATestBinned_x[j], P_l, ET_l, Pi_l) > gthresh_l)
+        system("canberra-gtk-play --file=L.ogg");
+    else if(pr_hmm(ATestBinned_x[j], P_c, ET_c, Pi_c) > gthresh_c)
+        system("canberra-gtk-play --file=circle.ogg");
     
     return 0;
 }
