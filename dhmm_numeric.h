@@ -157,7 +157,8 @@ vector<vector<double> > randomMatrix(int m, int n)
 	{
 		for (int j=0; j<n; j++)
 		{
-			randMatrix[i][j] = ((double) rand() / (RAND_MAX));
+			//randMatrix[i][j] = ((double) rand() / (RAND_MAX));
+			randMatrix[i][j] = 1;
 		}
 	}
 	return randMatrix;
@@ -167,8 +168,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 {
     int num_bins = bins.size();
 
-    float epsi = pow(1.0,-10);
-
+    long double epsi = 1e-5;
     // number of sequences (e.g., 10)
     int N = X.size();
 
@@ -232,9 +232,6 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
      */
     //P=sparse(P);  
 
-    vector<double> LL;
-    LL.resize(50);
-    int Lidx = 0; // index for LL
     double lik = 0, likbase=0, oldlik=0;
     for (int cycle=0; cycle<cyc; cycle++)
     {
@@ -333,44 +330,47 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             }*/	
 
 
-            for (int ake=0; ake<K; ake++)	
-            {
-                /* 
-                 *  alpha(1,:)=Pi(:)'.*B(1,:);
-                 * B = 1 x K and PiT is Kx1: automatic broadcasting operation - will generate KxK??
-                 */
-                alpha[0][ake] = Pi[0][ake] * B[0][ake];
+            for (int i=0; i<K; i++)	
+                alpha[0][i] = Pi[0][i] * B[0][i];
 
-                //scale(1)=sum(alpha(1,:));
-                double alphasum=0;
-                for (int achu=0; achu<K; achu++)
-                {
-                    alphasum=alphasum+alpha[0][achu];		
+            scale[0] = 0;
+            for (int i=0; i<K; i++)
+                scale[0] += alpha[0][i];		
+
+            for (int i=0; i<K; i++)
+                alpha[0][i]= alpha[0][i] / scale[0];
+
+#if 0
+            printf("\n\nPi\n\n");
+            for(int i=0; i < Pi.size(); i++) {
+                for(int j=0; j < Pi[0].size();j++) {
+                    printf(" %f ", Pi[i][j]);
                 }
-                scale[0]=alphasum;
-                alpha[0][ake]= alpha[0][ake] / scale[0];
+                printf("\n");
             }
-
+            printf("\n\nB\n\n");
+            for(int i=0; i < B.size(); i++) {
+                for(int j=0; j < B[0].size();j++) {
+                    printf(" %f ", B[i][j]);
+                }
+                printf("\n");
+            }
+            return;
+#endif
             double asum;
-            /*alpha(ellect,:)=(alpha(ellect-1,:)*P).*B(ellect,:);*/
             for (int ellect=1; ellect<T[n]; ellect++)
             {
                 asum=0;	
                 vector<double> temp = mult_1_2(alpha[ellect-1], P);
-                for(int i=0; i < temp.size(); i++)
+                for(int i=0; i < temp.size(); i++) {
                     alpha[ellect][i] = temp[i];
-                //Rightahere!
-                // P is 12x12 (sparse) - two for loops (below) to account for this...
-                // alpha is T(n) by K
-                // B is 1 x K
+                }
                 for (int set= 0 ; set < alpha[0].size(); set++) {
-                    alpha[ellect][set]=alpha[ellect-1][set]*B[ellect][set];
+                    alpha[ellect][set]=alpha[ellect][set]*B[ellect][set];
                     asum += alpha[ellect][set];
                 }
-                //scale(i)=sum(alpha(i,:));
                 scale[ellect] = asum;
 
-                //alpha(i,:)=alpha(i,:)/scale(i);
                 for (int an=0; an<alpha[0].size(); an++)
                     alpha[ellect][an] = alpha[ellect][an] / scale[ellect];		
             }
@@ -417,7 +417,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             {
                 double colSum = 0;
                 for(int col=0; col < K; col++)
-                    colSum = colSum + gamma[row][col];
+                    colSum += gamma[row][col];
 
                 gammasum[row][0] = colSum;
             }
@@ -476,6 +476,13 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 temp = dot_mult_1_1(beta[el+1], B[el+1]);
                 t_1 = mult_1_1_2( alpha[el], temp); 
                 t = dot_mult_2_2(P, t_1);
+                for(int i=0; i < t.size(); i++) {
+                    for(int j=0; j < t.size(); j++) {
+                        printf(" %f ", t[i][j]);
+                    }
+                    printf("\n");
+                }
+                return;
                 // find sum of t <--can sum all values; only diag. will matter
                 double tsum=0;
                 for (int le=0; le<t.size(); le++)	
@@ -497,11 +504,8 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 for(int a=0; a<num_bins; a++) {
                     for (int z=0; z<K; z++) {
                         Gammaksum[a][z] += gammaksum[a][z];
-                //        printf(" %f %f \n", Gammaksum[a][z], gammaksum[a][z]);
                     }
-                  //  printf("\n");
                 }
-                //return;
 
                 for (int y=0; y<T[n]-1; y++)	
                     Scale[y] += log(scale[y]);
@@ -529,12 +533,9 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
                 Pi[0][q] = Gammainit[0][q] / sum;	
 
             oldlik=lik;
-
             /* lik = sum(Scale); */
             for (int ch=0; ch<TMAX; ch++)
                 lik = lik + Scale[ch];
-
-            LL[Lidx++] = lik;
 
             float smallNum = pow(1.0,-6);
 
@@ -549,14 +550,8 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
             else if ( (lik-likbase) < (1+tol)*(oldlik-likbase) || !IsFiniteNumber(lik))
             {
                 printf("\nend\n");
-               /* for(int i=0; i < E.size(); i++) {
-                    for(int j=0; j < E[0].size(); j++)
-                        printf(" %f ", E[i][j]);
-                    printf("\n");
-                }
-                return; */
+                return; 
             }
-        printf(" %d %d\n",n, cycle);
         } //end loop over cyc
     }
 }
