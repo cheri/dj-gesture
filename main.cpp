@@ -12,8 +12,10 @@
 #include "dhmm_numeric.h"
 #include "pr_hmm.h"
 #include <unistd.h> 
+#include <time.h>
+#include <iostream>
 #define GetCurrentDir getcwd
-
+#define NUM_POINTS 1000
 using namespace std;
 int get_training_attr(const char * training_type, vector<vector<double> >& E, 
                 vector<vector<double> >& ET, vector<vector<double> >& P, 
@@ -162,7 +164,27 @@ int get_testing_attr(const char * training_type, vector<vector<double> >& ATestB
 }
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
+    int option = 0;
+    if (argc < 2) {
+        // Tell the user how to run the program
+        std::cerr << "Usage: " << argv[0] << " [t|p]" << std::endl;
+        printf("-t stands for testing about NUM_POINTS(1000 by default)\n");
+        printf("-p gives the response to a randomly selected point via audio\n");
+        return 1;
+    }
+    if(argv[1][0] == 't') { 
+        printf("t selected, testing with %d random points\n", NUM_POINTS);
+        option = 1;
+    } else if(argv[1][0] == 'p') {
+        printf("p selected, testing only one random point\n");
+        option = 2;
+    } else {
+        printf("Invalid option\n");
+        return 1;
+    }
+    
+    srand(time(NULL));
     double gthresh_c, gthresh_x, gthresh_l, gthresh_z;
     double centroids_c[8][3], centroids_x[8][3], centroids_l[8][3], centroids_z[8][3];
 
@@ -233,16 +255,116 @@ int main(void) {
     get_testing_attr("x", ATestBinned_x, centroids_x); 
     get_testing_attr("l", ATestBinned_l, centroids_l); 
     get_testing_attr("z", ATestBinned_z, centroids_z); 
+    if(option == 1) {
+        int correct = 0, false_pos = 0;
+        for(int i=0; i < NUM_POINTS; i++) {
+            int gest_num = rand() % 4  + 1; //choose between the 4 gestures 
+            int data_num = rand() % 9; //choose datapoints between 0-9
+            //printf(" gest_num: %d data_num: %d\n", gest_num, data_num); 
+            if(gest_num == 1) {
+                if(pr_hmm(ATestBinned_x[data_num], P_x, ET_x, Pi_x) > gthresh_x) {
+                    correct++; 
+                } else if(pr_hmm(ATestBinned_x[data_num], P_l, ET_l, Pi_l) > gthresh_l) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_x[data_num], P_c, ET_c, Pi_c) > gthresh_c) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_x[data_num], P_z, ET_z, Pi_z) > gthresh_z) {
+                    false_pos++;
+                }
+            } else if(gest_num == 2) {
+                if(pr_hmm(ATestBinned_l[data_num], P_x, ET_x, Pi_x) > gthresh_x) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_l[data_num], P_l, ET_l, Pi_l) > gthresh_l) {
+                    correct++;
+                } else if(pr_hmm(ATestBinned_l[data_num], P_c, ET_c, Pi_c) > gthresh_c) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_l[data_num], P_z, ET_z, Pi_z) > gthresh_z) {
+                    false_pos++;
+                }
+            } else if(gest_num == 3) {
+                if(pr_hmm(ATestBinned_c[data_num], P_x, ET_x, Pi_x) > gthresh_x) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_c[data_num], P_l, ET_l, Pi_l) > gthresh_l) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_c[data_num], P_c, ET_c, Pi_c) > gthresh_c) {
+                    correct++;
+                } else if(pr_hmm(ATestBinned_c[data_num], P_z, ET_z, Pi_z) > gthresh_z) {
+                    false_pos++;
+                }
+            } else {
+                if(pr_hmm(ATestBinned_z[data_num], P_x, ET_x, Pi_x) > gthresh_x) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_z[data_num], P_l, ET_l, Pi_l) > gthresh_l) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_z[data_num], P_c, ET_c, Pi_c) > gthresh_c) {
+                    false_pos++;
+                } else if(pr_hmm(ATestBinned_z[data_num], P_z, ET_z, Pi_z) > gthresh_z) {
+                    correct++;
+                }
+            }
+        }
+        printf("total tested: %d correct: %d false_pos: %d\n", NUM_POINTS, correct, false_pos);
+    } else {
+        int gest_num = rand() % 4  + 1; //choose between the 4 gestures 
+        int j = rand() % 9; //choose datapoints between 0-9
+        if( gest_num == 1) {
+            if(pr_hmm(ATestBinned_x[j], P_x, ET_x, Pi_x) > gthresh_x) {
+                system("canberra-gtk-play --file=orangex.wav");
+                printf("OrangeX!, Correctly classified\n");
+            } else if(pr_hmm(ATestBinned_x[j], P_l, ET_l, Pi_l) > gthresh_l) {
+                system("canberra-gtk-play --file=megalead.wav");
+                printf("megalead!, Incorrecly classified \n");
+            } else if(pr_hmm(ATestBinned_x[j], P_c, ET_c, Pi_c) > gthresh_c) {
+                system("canberra-gtk-play --file=orchhit.wav");
+                printf("orchhit!, Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_x[j], P_z, ET_z, Pi_z) > gthresh_z) {
+                system("canberra-gtk-play --file=zekick.wav");
+                printf("zekick!, Incorrectly classified\n");
+            }
+        } else if(gest_num == 2) {
+            if(pr_hmm(ATestBinned_l[j], P_x, ET_x, Pi_x) > gthresh_x) {
+                system("canberra-gtk-play --file=orangex.wav");
+                printf("OrangeX!, Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_l[j], P_l, ET_l, Pi_l) > gthresh_l) {
+                system("canberra-gtk-play --file=megalead.wav");
+                printf("megalead!, Correctly classified\n");
+            } else if(pr_hmm(ATestBinned_l[j], P_c, ET_c, Pi_c) > gthresh_c) {
+                system("canberra-gtk-play --file=orchhit.wav");
+                printf("orchhit!, Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_l[j], P_z, ET_z, Pi_z) > gthresh_z) {
+                system("canberra-gtk-play --file=zekick.wav");
+                printf("zekick!, Incorrectly classified\n");
+            }
+        } else if(gest_num == 3) {
+            if(pr_hmm(ATestBinned_c[j], P_x, ET_x, Pi_x) > gthresh_x) {
+                system("canberra-gtk-play --file=orangex.wav");
+                printf("OrangeX!, Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_c[j], P_l, ET_l, Pi_l) > gthresh_l) {
+                system("canberra-gtk-play --file=megalead.wav");
+                printf("megalead!,Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_c[j], P_c, ET_c, Pi_c) > gthresh_c) {
+                system("canberra-gtk-play --file=orchhit.wav");
+                printf("orchhit!, Correctly classified\n");
+            } else if(pr_hmm(ATestBinned_c[j], P_z, ET_z, Pi_z) > gthresh_z) {
+                system("canberra-gtk-play --file=zekick.wav");
+                printf("zekick!, Incorrectly classified\n");
+            }
+        } else {
+            if(pr_hmm(ATestBinned_z[j], P_x, ET_x, Pi_x) > gthresh_x) {
+                system("canberra-gtk-play --file=orangex.wav");
+                printf("OrangeX!, Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_z[j], P_l, ET_l, Pi_l) > gthresh_l) {
+                system("canberra-gtk-play --file=megalead.wav");
+                printf("megalead!,Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_z[j], P_c, ET_c, Pi_c) > gthresh_c) {
+                system("canberra-gtk-play --file=orchhit.wav");
+                printf("orchhit!, Incorrectly classified\n");
+            } else if(pr_hmm(ATestBinned_z[j], P_z, ET_z, Pi_z) > gthresh_z) {
+                system("canberra-gtk-play --file=zekick.wav");
+                printf("zekick!, Correctly classified\n");
+            }
+        }
+    }
 
-    int j =2;
-    if(pr_hmm(ATestBinned_x[j], P_x, ET_x, Pi_x) > gthresh_x)
-        system("canberra-gtk-play --file=orangex.wav");
-    else if(pr_hmm(ATestBinned_x[j], P_l, ET_l, Pi_l) > gthresh_l)
-        system("canberra-gtk-play --file=megalead.wav");
-    else if(pr_hmm(ATestBinned_x[j], P_c, ET_c, Pi_c) > gthresh_c)
-        system("canberra-gtk-play --file=orchhit.wav");
-    else if(pr_hmm(ATestBinned_x[j], P_z, ET_z, Pi_z) > gthresh_z)
-        system("canberra-gtk-play --file=zekick.wav");
-    
     return 0;
 }
