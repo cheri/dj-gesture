@@ -15,7 +15,7 @@
 #define GetCurrentDir getcwd
 
 using namespace std;
-int get_training_attr(char * training_type, vector<vector<double> >& E, 
+int get_training_attr(const char * training_type, vector<vector<double> >& E, 
                 vector<vector<double> >& ET, vector<vector<double> >& P, 
                 vector<vector<double> >& Pi, double *gthresh,
                 double centroids[8][3])
@@ -126,7 +126,7 @@ int get_training_attr(char * training_type, vector<vector<double> >& E,
     return 0;
 }
 
-int get_testing_attr(char * training_type, vector<vector<double> >& ATestBinned, double centroids[8][3])
+int get_testing_attr(const char * training_type, vector<vector<double> >& ATestBinned, double centroids[8][3])
 {
 
     /* Initialize XYZ "data" vectors */
@@ -163,14 +163,15 @@ int get_testing_attr(char * training_type, vector<vector<double> >& ATestBinned,
 
 
 int main(void) {
-    double gthresh_c, gthresh_x, gthresh_l;
-    double centroids_c[8][3], centroids_x[8][3], centroids_l[8][3];
+    double gthresh_c, gthresh_x, gthresh_l, gthresh_z;
+    double centroids_c[8][3], centroids_x[8][3], centroids_l[8][3], centroids_z[8][3];
 
-    vector<vector<double> > ATestBinned_c, ATestBinned_x, ATestBinned_l;
+    vector<vector<double> > ATestBinned_c, ATestBinned_x, ATestBinned_l, ATestBinned_z;
 
     vector<vector<double> > E_c, ET_c, P_c, Pi_c;
     vector<vector<double> > E_x, ET_x, P_x, Pi_x;
     vector<vector<double> > E_l, ET_l, P_l, Pi_l;
+    vector<vector<double> > E_z, ET_z, P_z, Pi_z;
 
     ET_c.resize(12);
     P_c.resize(12);
@@ -183,6 +184,10 @@ int main(void) {
     ET_l.resize(12);
     P_l.resize(12);
     Pi_l.resize(12);
+
+    ET_z.resize(12);
+    P_z.resize(12);
+    Pi_z.resize(12);
 
     for (int go=0; go<12; go++)
     {
@@ -198,6 +203,10 @@ int main(void) {
         P_l[go].resize(12);
         Pi_l[go].resize(12);
 
+        ET_z[go].resize(8);
+        P_z[go].resize(12);
+        Pi_z[go].resize(12);
+
     }
 
     E_c.resize(8);
@@ -206,27 +215,34 @@ int main(void) {
 
     E_l.resize(8);
 
+    E_z.resize(8);
+
     for (int go=0; go < 8; go++)
     {
         E_c[go].resize(12);
         E_x[go].resize(12);
         E_l[go].resize(12);
+        E_z[go].resize(12);
     }
-    get_training_attr("circle", E_c, ET_c, P_c, Pi_c, &gthresh_c, centroids_c); 
+    get_training_attr("o", E_c, ET_c, P_c, Pi_c, &gthresh_c, centroids_c); 
     get_training_attr("x", E_x, ET_x, P_x, Pi_x, &gthresh_x, centroids_x); 
     get_training_attr("l", E_l, ET_l, P_l, Pi_l, &gthresh_l, centroids_l); 
+    get_training_attr("z", E_z, ET_z, P_z, Pi_z, &gthresh_z, centroids_z); 
 
-    get_testing_attr("circle", ATestBinned_c, centroids_c); 
+    get_testing_attr("o", ATestBinned_c, centroids_c); 
     get_testing_attr("x", ATestBinned_x, centroids_x); 
     get_testing_attr("l", ATestBinned_l, centroids_l); 
+    get_testing_attr("z", ATestBinned_z, centroids_z); 
 
     int j =2;
     if(pr_hmm(ATestBinned_x[j], P_x, ET_x, Pi_x) > gthresh_x)
-        system("canberra-gtk-play --file=X.ogg");
+        system("canberra-gtk-play --file=orangex.wav");
     else if(pr_hmm(ATestBinned_x[j], P_l, ET_l, Pi_l) > gthresh_l)
-        system("canberra-gtk-play --file=L.ogg");
+        system("canberra-gtk-play --file=megalead.wav");
     else if(pr_hmm(ATestBinned_x[j], P_c, ET_c, Pi_c) > gthresh_c)
-        system("canberra-gtk-play --file=circle.ogg");
+        system("canberra-gtk-play --file=orchhit.wav");
+    else if(pr_hmm(ATestBinned_x[j], P_z, ET_z, Pi_z) > gthresh_z)
+        system("canberra-gtk-play --file=zekick.wav");
     
     return 0;
 }
