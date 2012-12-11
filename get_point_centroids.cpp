@@ -69,9 +69,9 @@ int i;
     kmeans_1(mean, K, idx, arr_centroid, pCluster);
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 3; j++) {
-            printf(" %f ", arr_centroid[i][j]);
+            //printf(" %f ", arr_centroid[i][j]);
         }
-        printf(" points in cluster: %f at %d\n", pCluster[i][0], i);
+        //printf(" points in cluster: %f at %d\n", pCluster[i][0], i);
     }
     int c;
     //for(c = 0; c < 60; c++) {

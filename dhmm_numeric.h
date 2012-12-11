@@ -182,9 +182,9 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
 
     //double TMAX = *max_element(T.begin(), T.end());
     double TMAX = 60;
-    cout << ("\n********************************************************************\n");
-    cout << ("Training!");
-    cout << ("********************************************************************\n");
+    //cout << ("\n********************************************************************\n");
+    //cout << ("Training!");
+    //cout << ("********************************************************************\n");
     E = randomMatrix(num_bins,K);
 
     for (int nb=0; nb<num_bins; nb++)
@@ -534,10 +534,10 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
         lik  = 0;
         for (int ch=0; ch<TMAX; ch++)
             lik +=  Scale[ch];
-        printf( " %f ", lik);
+        //printf( " %f ", lik);
 
         double smallNum = 1.0e-6;
-        printf("\ncycle %d log likelihood = %f \n",cycle,lik);
+       // printf("\ncycle %d log likelihood = %f \n",cycle,lik);
 
         if (cycle<=2)
         {

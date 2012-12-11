@@ -66,8 +66,8 @@ int kmeans_1(double data[60][3], double k, int idx[60], double arr_centroid[8][3
     Mat labels;
     int m = 8;
     cv::kmeans(cvdata, 8, labels, TermCriteria(CV_TERMCRIT_ITER, 100,0), 100, KMEANS_RANDOM_CENTERS, centers); 
-    printf("labels  rows: %d cols: %d\n", labels.rows, labels.cols);
-    printf("centers rows: %d cols: %d\n", centers.rows, centers.cols);
+    //printf("labels  rows: %d cols: %d\n", labels.rows, labels.cols);
+    //printf("centers rows: %d cols: %d\n", centers.rows, centers.cols);
     for(int i =0; i < 8; i++)
         for(int j=0; j < 3; j++)
             arr_centroid[i][j] = centers.at<float>(i,j);

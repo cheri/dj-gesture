@@ -15,11 +15,14 @@
 #define GetCurrentDir getcwd
 
 using namespace std;
-int main(void)
+int get_training_attr(char * training_type, vector<vector<double> >& E, 
+                vector<vector<double> >& ET, vector<vector<double> >& P, 
+                vector<vector<double> >& Pi, double *gthresh,
+                double centroids[8][3])
 {
 
     /* Initialize XYZ "data" vectors */
-    double training[60][10][3], testing[60][10][3]; 
+    double training[60][10][3]; 
 
     /* Get current directory path */
     char cCurrentPath[FILENAME_MAX];
@@ -28,42 +31,26 @@ int main(void)
         return 0;
     }
     string filepath = cCurrentPath;
-    string testpath = cCurrentPath;
     filepath += "/data/train/";
-    testpath += "/data/test/";
 
-    //string train_gesture = "circle";
-    //string test_gesture = "circle";
-    string train_gesture = "x";
-    string test_gesture = "x";
 
     /* Grab XYZ data */
-    get_xyz_data(filepath, train_gesture, training);
-    get_xyz_data(testpath, test_gesture, testing);
+    get_xyz_data(filepath, training_type, training);
 
     /****INITIALIZE****/
     double gestureRecThreshold = 0; // set below
     int N = 8, D = 3, M = 12, LR = 2;
-    double TrainXClustered[10][60], TestXClustered[10][60], centroids[8][3];
-    printf("%d\n", __LINE__);
+    double TrainXClustered[10][60];
     get_point_centroids(training, N, D, centroids);
-    printf("%d\n", __LINE__);
     get_point_clusters(training, centroids, D, TrainXClustered);
-    printf("%d\n", __LINE__);
-    get_point_clusters(testing, centroids, D, TestXClustered);
-    printf("%d\n", __LINE__);
 
     /****TRAINING****/
     // Set priors:
 
-    vector<vector<double> > ATrainBinned, ATestBinned;
+    vector<vector<double> > ATrainBinned;
     ATrainBinned.resize(10);
-    ATestBinned.resize(10);
     for (int i=0; i<10; i++)
-    {
         ATrainBinned[i].resize(60);
-        ATestBinned[i].resize(60);
-    }
 
     vector<vector<double> > pP;
     pP.resize(12);
@@ -95,7 +82,6 @@ int main(void)
     for(int xx=0; xx < ATrainBinned.size(); xx++) { 
         for(int yy=0; yy < ATrainBinned[0].size(); yy++) {
             ATrainBinned[xx][yy] = TrainXClustered[xx][yy];
-            ATestBinned[xx][yy] = TestXClustered[xx][yy];
         }
     }
 
@@ -106,23 +92,6 @@ int main(void)
     for (double i=0; i<8; i++)
         bins[i][0] = i;
     /* Find E Transpose (E = 8x12)*/
-    vector<vector<double> > ET;
-    vector<vector<double> > E, P, Pi;
-    ET.resize(12);
-    P.resize(12);
-    Pi.resize(12);
-
-    for (int go=0; go<12; go++)
-    {
-        ET[go].resize(8);
-        P[go].resize(12);
-        Pi[go].resize(12);
-    }
-    E.resize(8);
-    for (int go=0; go < 8; go++)
-    {
-        E[go].resize(12);
-    }
 
 
     // Train the model:
@@ -152,27 +121,109 @@ int main(void)
         sumLik = sumLik + lik;
     }
     gestureRecThreshold = 2.0*sumLik/ATrainBinned.size();
+    *gthresh = gestureRecThreshold;
 
-    cout << ("Testing!\n");
-    int recs=0;
-    double tLL[10][1]; 
+    return 0;
+}
 
-    for (int j=0; j<10; j++)
+int get_testing_attr(char * training_type, vector<vector<double> >& ATestBinned, double centroids[8][3])
+{
+
+    /* Initialize XYZ "data" vectors */
+    double testing[60][10][3];
+
+    /* Get current directory path */
+    char cCurrentPath[FILENAME_MAX];
+    if (!GetCurrentDir(cCurrentPath, sizeof(cCurrentPath)))
     {
-        tLL[j][0] = pr_hmm(ATestBinned[j], P, ET, Pi);
-        if (tLL[j][0] > gestureRecThreshold)
-        {
-            recs = recs+1;
-            cout << ("Found gesture!\n");
-        }
-        else
-        {
-            cout << ("No gesture (╯°□°）╯︵ ┻━┻ \n");   
-        }
+        return 0;
+    }
+    string filepath = cCurrentPath;
+    string testpath = cCurrentPath;
+    filepath += "/data/train/";
+    testpath += "/data/test/";
+
+    /* Grab XYZ data */
+    get_xyz_data(testpath, training_type, testing);
+
+    /****INITIALIZE****/
+    int D = 3;
+    double TestXClustered[10][60];
+    get_point_clusters(testing, centroids, D, TestXClustered);
+
+    ATestBinned.resize(10);
+    for (int i=0; i<10; i++)
+        ATestBinned[i].resize(60);
+
+    for(int xx=0; xx < ATestBinned.size(); xx++)
+        for(int yy=0; yy < ATestBinned[0].size(); yy++)
+            ATestBinned[xx][yy] = TestXClustered[xx][yy];
+    return 0;
+}
+
+
+int main(void) {
+    double gthresh_c, gthresh_x, gthresh_l;
+    double centroids_c[8][3], centroids_x[8][3], centroids_l[8][3];
+
+    vector<vector<double> > ATestBinned_c, ATestBinned_x, ATestBinned_l;
+
+    vector<vector<double> > E_c, ET_c, P_c, Pi_c;
+    vector<vector<double> > E_x, ET_x, P_x, Pi_x;
+    vector<vector<double> > E_l, ET_l, P_l, Pi_l;
+
+    ET_c.resize(12);
+    P_c.resize(12);
+    Pi_c.resize(12);
+
+    ET_x.resize(12);
+    P_x.resize(12);
+    Pi_x.resize(12);
+
+    ET_l.resize(12);
+    P_l.resize(12);
+    Pi_l.resize(12);
+
+    for (int go=0; go<12; go++)
+    {
+        ET_c[go].resize(8);
+        P_c[go].resize(12);
+        Pi_c[go].resize(12);
+
+        ET_x[go].resize(8);
+        P_x[go].resize(12);
+        Pi_x[go].resize(12);
+
+        ET_l[go].resize(8);
+        P_l[go].resize(12);
+        Pi_l[go].resize(12);
+
     }
 
-    cout << ("Recognition success rate: ");
-    cout << (100*recs/10);
-    cout << ("\n");
+    E_c.resize(8);
+
+    E_x.resize(8);
+
+    E_l.resize(8);
+
+    for (int go=0; go < 8; go++)
+    {
+        E_c[go].resize(12);
+        E_x[go].resize(12);
+        E_l[go].resize(12);
+    }
+    get_training_attr("circle", E_c, ET_c, P_c, Pi_c, &gthresh_c, centroids_c); 
+    get_training_attr("x", E_x, ET_x, P_x, Pi_x, &gthresh_x, centroids_x); 
+    get_training_attr("l", E_l, ET_l, P_l, Pi_l, &gthresh_l, centroids_l); 
+
+    get_testing_attr("circle", ATestBinned_c, centroids_c); 
+    get_testing_attr("x", ATestBinned_x, centroids_x); 
+    get_testing_attr("l", ATestBinned_l, centroids_l); 
+
+    int j =2;
+    printf(" %f %f\n", pr_hmm(ATestBinned_x[j], P_x, ET_x, Pi_x), gthresh_x);
+    printf(" %f %f\n", pr_hmm(ATestBinned_x[j], P_l, ET_l, Pi_l), gthresh_l);
+    printf(" %f %f\n", pr_hmm(ATestBinned_x[j], P_c, ET_c, Pi_c), gthresh_c);
+    
     return 0;
 }
