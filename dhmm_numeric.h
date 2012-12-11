@@ -163,7 +163,8 @@ vector<vector<double> > randomMatrix(int m, int n)
 	return randMatrix;
 }
 
-void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<vector<double> > bins, int K, int cyc, double tol)
+void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<vector<double> > bins, int K, int cyc, double tol,
+    vector<vector<double> >& E, vector<vector<double> >& P, vector<vector<double> >& Pi)
 {
     int num_bins = bins.size();
 
@@ -184,7 +185,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     cout << ("\n********************************************************************\n");
     cout << ("Training!");
     cout << ("********************************************************************\n");
-    vector<vector<double> > E = randomMatrix(num_bins,K);
+    E = randomMatrix(num_bins,K);
 
     for (int nb=0; nb<num_bins; nb++)
     {
@@ -204,7 +205,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     }
 
     // initialize Pi with random values
-    vector<vector<double> > Pi = randomMatrix(1, K);
+    Pi = randomMatrix(1, K);
 
     // find sum of Pi
     double sumPi = 0;
@@ -220,7 +221,7 @@ void dhmm_numeric(vector<vector<double> > X, vector<vector<double> > pP, vector<
     }
 
     // transition matrix
-    vector<vector<double> > P = pP;
+    P = pP;
     P=rdiv(P,rsum(P));
 
     /* This is useful if the transition matrix is 

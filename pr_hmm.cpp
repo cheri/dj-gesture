@@ -16,7 +16,7 @@ using namespace std;
  * @param pi: initial probability matrix (1xK, K=12?)
  * @return P: probability of given sequence in the given model
  */
-double pr_hmm(int cur, vector<vector<double> > o, double a[12][12], vector<vector<double> > b, vector<vector<double> > pi)
+double pr_hmm(int cur, vector<vector<double> > o, vector<vector<double> > a, vector<vector<double> > b, vector<vector<double> > pi)
 {
 	int n = 12;
 	int T = 60;

@@ -45,18 +45,18 @@ int main(void)
     double TrainXClustered[10][60], TestXClustered[10][60], centroids[8][3];
     get_point_centroids(training, N, D, centroids);
     get_point_clusters(training, centroids, D, TrainXClustered);
-//    get_point_clusters(testing, centroids, D, TestXClustered);
+    get_point_clusters(testing, centroids, D, TestXClustered);
 
     /****TRAINING****/
     // Set priors:
-    double P[12][12];
-    //prior_transition_matrix(M, LR, P);
 
-    vector<vector<double> > ATrainBinned;
+    vector<vector<double> > ATrainBinned, ATestBinned;
     ATrainBinned.resize(10);
+    ATestBinned.resize(10);
     for (int i=0; i<10; i++)
     {
         ATrainBinned[i].resize(60);
+        ATestBinned[i].resize(60);
     }
 
     vector<vector<double> > pP;
@@ -85,15 +85,13 @@ int main(void)
         }
     }
     pP[11][11] = 1;
-                
+
     for(int xx=0; xx < ATrainBinned.size(); xx++) { 
         for(int yy=0; yy < ATrainBinned[0].size(); yy++) {
             ATrainBinned[xx][yy] = TrainXClustered[xx][yy];
-           // printf(" %f ", ATrainBinned[xx][yy]);
+            ATestBinned[xx][yy] = TestXClustered[xx][yy];
         }
-        //printf("\n");
     }
-   // return 0;
 
     vector<vector<double> > bins;
     bins.resize(8);
@@ -101,30 +99,33 @@ int main(void)
         bins[i].resize(1);
     for (double i=0; i<8; i++)
         bins[i][0] = i;
-    
+    /* Find E Transpose (E = 8x12)*/
+    vector<vector<double> > ET;
+    vector<vector<double> > E, P, Pi;
+    ET.resize(12);
+    P.resize(12);
+    Pi.resize(12);
+
+    for (int go=0; go<12; go++)
+    {
+        ET[go].resize(8);
+        P[go].resize(12);
+        Pi[go].resize(12);
+    }
+    E.resize(8);
+    for (int go=0; go < 8; go++)
+    {
+        E[go].resize(12);
+    }
+
+
     // Train the model:
     int cyc = 50;
-     dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .001); 
-#if 0
+    dhmm_numeric(ATrainBinned, pP, bins, M, cyc, .001, E, P, Pi); 
     /****TESTING****/    
     double sumLik = 0, minLik = 1000000, lik=0;
-    for (int j=0; j < ATrainBinned[0].size(); j++)
+    for (int j=0; j < ATrainBinned.size(); j++)
     {
-        /* Find E Transpose (E = 8x12)*/
-        vector<vector<double> > ET;
-        vector<vector<double> > E;
-        ET.resize(12);
-
-        for (int go=0; go<12; go++)
-        {
-            ET[go].resize(8);
-        }
-        E.resize(8);
-        for (int go=0; go < 8; go++)
-        {
-            E[go].resize(12);
-        }
-
         // dhmm_numeric returns E
         for (int nava=0; nava<8; nava++)
         {
@@ -133,7 +134,7 @@ int main(void)
                 ET[sar][nava] = E[nava][sar];
             }
         }
-        
+
         // we pass ATrainBinned[j][:] here...
         // Pi is from dhmm_numeric
         lik = pr_hmm(j, ATrainBinned, P, ET, Pi);
@@ -144,7 +145,7 @@ int main(void)
         }
         sumLik = sumLik + lik;
     }
-    gestureRecThreshold = 2.0*sumLik/ATrainBinned[0].size();
+    gestureRecThreshold = 2.0*sumLik/ATrainBinned.size();
 
     cout << ("Testing!\n");
     int recs=0;
@@ -167,6 +168,5 @@ int main(void)
     cout << ("Recognition success rate: ");
     cout << (100*recs/10);
     cout << ("\n");
-#endif
     return 0;
 }
