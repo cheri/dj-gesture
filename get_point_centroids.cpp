@@ -66,7 +66,7 @@ int i;
 	[centroids,points,idx] = kmeans(mean,K);
 	K = size(centroids,1);*/
 
-    kmeans(mean, K, idx, arr_centroid, pCluster);
+    kmeans_1(mean, K, idx, arr_centroid, pCluster);
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 3; j++) {
             printf(" %f ", arr_centroid[i][j]);

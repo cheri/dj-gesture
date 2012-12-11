@@ -50,12 +50,29 @@ int fill_rand_matrix(Mat *centroid) {
     for(int i = 0; i < centroid->rows; i++) {
         for(int j = 0; j < centroid->cols; j++) {
             centroid->at<double>(i,j) = (double)rand()/RAND_MAX;
+           // centroid->at<double>(i,j) = 1;
         }
     }
+    return 0;
 }
 
 
-int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3], double pCluster[8][1]) {
+int kmeans_1(double data[60][3], double k, int idx[60], double arr_centroid[8][3], double pCluster[8][1]) {
+    Mat cvdata(60, 3, CV_32F);
+    for(int i=0; i < 60; i++)
+        for(int j=0; j < 3; j++)
+            cvdata.at<float>(i,j) = data[i][j];
+    Mat centers;
+    Mat labels;
+    int m = 8;
+    cv::kmeans(cvdata, 8, labels, TermCriteria(CV_TERMCRIT_ITER, 100,0), 100, KMEANS_RANDOM_CENTERS, centers); 
+    printf("labels  rows: %d cols: %d\n", labels.rows, labels.cols);
+    printf("centers rows: %d cols: %d\n", centers.rows, centers.cols);
+    for(int i =0; i < 8; i++)
+        for(int j=0; j < 3; j++)
+            arr_centroid[i][j] = centers.at<float>(i,j);
+    return 0;
+#if 0
     Mat cvdata;
     Mat data_min, data_max, data_diff;
     Mat centroid(8, 3, CV_64FC1);
@@ -73,13 +90,16 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
     min(&cvdata, &data_min);
     max(&cvdata, &data_max);
     data_diff = data_max - data_min;
+    printf("%s %d\n", __FILE__, __LINE__);
 
     fill_rand_matrix(&centroid);
     for(int i = 0; i < centroid.rows; i++) {
         centroid.row(i) = centroid.row(i).mul(data_diff);
         centroid.row(i) = centroid.row(i) + data_min;
     }
+    int xin = 0;
     while(pos_diff > 0.0) {
+        xin++;
         for(int d = 0; d < cvdata.rows; d++) {
             Mat min_diff = cvdata.row(d) - centroid.row(1);
             Mat mat_diff = min_diff * min_diff.t();
@@ -116,15 +136,23 @@ int kmeans(double data[60][3], double k, int idx[60], double arr_centroid[8][3],
         }
         Mat posdiffMat = centroid - oldPositions;
         pos_diff = sum(sum(posdiffMat.mul(posdiffMat)))[0];
+        printf("diff: %f %f\n", s, pos_diff);
+        if(xin > 14)
+            exit(0);
     }
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 3; j++) {
             arr_centroid[i][j] = centroid.at<double>(i,j);         
+            printf( " %f ", arr_centroid[i][j]);
         }
         pCluster[i][0] = pointsInCluster.at<double>(i,0);
+        printf("\n pcluster %f pos: %d\n ", pCluster[i][0], i);
     }
 
+    printf("%s %d\n", __FILE__, __LINE__);
+    exit(0);
     return 0;
+#endif
 }
 
 #if 0

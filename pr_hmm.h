@@ -13,7 +13,7 @@ using namespace std;
  * @param pi: initial probability matrix
  * @return P: probability of given sequence in the given model
  */
-double pr_hmm(int cur, vector<vector<double> > o, vector<vector<double> > a, vector<vector<double> > b, vector<vector<double> > pi);
+double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double> > b, vector<vector<double> > pi);
 #if 0
 {
 	n = a[1].size();

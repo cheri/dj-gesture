@@ -32,8 +32,10 @@ int main(void)
     filepath += "/data/train/";
     testpath += "/data/test/";
 
-    string train_gesture = "circle";
-    string test_gesture = "circle";
+    //string train_gesture = "circle";
+    //string test_gesture = "circle";
+    string train_gesture = "x";
+    string test_gesture = "x";
 
     /* Grab XYZ data */
     get_xyz_data(filepath, train_gesture, training);
@@ -43,9 +45,13 @@ int main(void)
     double gestureRecThreshold = 0; // set below
     int N = 8, D = 3, M = 12, LR = 2;
     double TrainXClustered[10][60], TestXClustered[10][60], centroids[8][3];
+    printf("%d\n", __LINE__);
     get_point_centroids(training, N, D, centroids);
+    printf("%d\n", __LINE__);
     get_point_clusters(training, centroids, D, TrainXClustered);
+    printf("%d\n", __LINE__);
     get_point_clusters(testing, centroids, D, TestXClustered);
+    printf("%d\n", __LINE__);
 
     /****TRAINING****/
     // Set priors:
@@ -137,7 +143,7 @@ int main(void)
 
         // we pass ATrainBinned[j][:] here...
         // Pi is from dhmm_numeric
-        lik = pr_hmm(j, ATrainBinned, P, ET, Pi);
+        lik = pr_hmm(ATrainBinned[j], P, ET, Pi);
 
         if (lik < minLik)
         {
@@ -153,7 +159,7 @@ int main(void)
 
     for (int j=0; j<10; j++)
     {
-        tLL[j][0] = pr_hmm(j, ATestBinned, P, ET, Pi);
+        tLL[j][0] = pr_hmm(ATestBinned[j], P, ET, Pi);
         if (tLL[j][0] > gestureRecThreshold)
         {
             recs = recs+1;

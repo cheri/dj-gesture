@@ -16,7 +16,7 @@ using namespace std;
  * @param pi: initial probability matrix (1xK, K=12?)
  * @return P: probability of given sequence in the given model
  */
-double pr_hmm(int cur, vector<vector<double> > o, vector<vector<double> > a, vector<vector<double> > b, vector<vector<double> > pi)
+double pr_hmm(vector<double> o, vector<vector<double> > a, vector<vector<double> > b, vector<vector<double> > pi)
 {
 	int n = 12;
 	int T = 60;
@@ -25,8 +25,7 @@ double pr_hmm(int cur, vector<vector<double> > o, vector<vector<double> > a, vec
 
 	for (int i=0; i<n; i++)
 	{
-		double j = o[cur][0];
-		m[0][i] = b[i][j]*pi[0][i];
+		m[0][i] = b[i][o[0]]*pi[0][i];
 	}
 
 	for (int ti=0;ti<T-1; ti++)
@@ -38,14 +37,14 @@ double pr_hmm(int cur, vector<vector<double> > o, vector<vector<double> > a, vec
 			{
 				z = z + a[k][j]*m[ti][k];
 			}
-			m[ti+1][j] = z*b[j][o[cur][ti+1]];
+			m[ti+1][j] = z*b[j][o[ti+1]];
 		}	
 	}
 
 	double p = 0;
 	for (int r=0; r<n; r++)
 	{
-		p = p + m[T][r];
+		p = p + m[T-1][r];
 	}
 	p=log(p);
 	return p;
