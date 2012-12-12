@@ -10,6 +10,11 @@ git clone https://github.com/navadavuluri/dj-gesture.git
 
 cd dj-gesture
 
+(for compiling)
+g++ -g kmeans.h kmeans.cpp get_point_centroids.cpp get_xyz_data.cpp get_point_clusters.cpp prior_transition_matrix.cpp pr_hmm.cpp main.cpp `pkg-config --cflags --libs opencv`
 
 
-Instructions for running the project
+(for running the project for testing)
+a.out t
+(for playing around with the binary and getting an audio response)
+a.out p
